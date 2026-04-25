@@ -63,6 +63,9 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
       );
 
       if (result != null) {
+        _addLog('File selected: ${result.files.single.name}');
+        _addLog('Processing...');
+
         // 2. Upload it (read the bytes) and process it
         final bytes = result.files.single.bytes;
         if (bytes != null) {
@@ -70,6 +73,8 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
           // or just proceed if it's naturally heavy.
           var excel = Excel.decodeBytes(bytes);
 
+          _addLog('Sheets number: ${excel.tables.keys.length}');
+          _addLog('Sheets titles: ${excel.tables.keys.join(', ')}');
           // 3. Print the contents in the log
           for (var table in excel.tables.keys) {
             _addLog('--- Sheet: $table ---');
@@ -105,8 +110,8 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
           title: const Text('Timetable Genie'),
           actions: [
             TextButton.icon(
-              onPressed: () {
-                _addLog('Uploading file ...');
+              onPressed: _isProcessing ? null : () {
+                _addLog('Selecting file ...');
                 _pickAndProcessFile();
               },
               icon: const Icon(Icons.upload),
