@@ -2,6 +2,9 @@ import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
+import 'Academic.dart';
+import 'Module.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -28,6 +31,11 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
   final List<String> _logs = [];
   final ScrollController _scrollController = ScrollController();
   bool _isProcessing = false;
+
+  static final Set<Module> allModules = {};
+  // static final Map<String, List<StructureRow>> programmeToStructureRowsMap = {};
+  // static final Map<Module, List<String>> moduleToProgrammesMap = {};
+  static final Map<String, Academic> emailToAcademic = {};
 
   void _addLog(String message) {
     // debugPrint(message);
@@ -75,17 +83,31 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
 
           _addLog('Sheets number: ${excel.tables.keys.length}');
           _addLog('Sheets titles: ${excel.tables.keys.join(', ')}');
+
           // 3. Print the contents in the log
           for (var table in excel.tables.keys) {
             _addLog('--- Sheet: $table ---');
-            var sheet = excel.tables[table]!;
-            
-            for (var row in sheet.rows) {
-              // Extract values from each cell in the row
-              var rowValues = row.map((cell) => cell?.value?.toString() ?? '').toList();
-              _addLog('Row: $rowValues');
-            }
+
+            // var sheet = excel.tables[table]!;
+            // for (var row in sheet.rows) {
+            //   // Extract values from each cell in the row
+            //   var rowValues = row.map((cell) => cell?.value?.toString() ?? '').toList();
+            //   _addLog('Row: $rowValues');
+            // }
           }
+
+          var sheetModules = excel.tables['modules']!;
+          _addLog('Processing modules ...');
+          _loadModules(sheetModules);
+
+          var sheetAcademics = excel.tables['academics']!;
+          _addLog('Processing academics ...');
+          _loadAcademics(sheetAcademics);
+
+          _addLog('Modules:');
+          _addLog(allModules.toString());
+          _addLog('Academics:');
+          _addLog(emailToAcademic.toString());
         } else {
           _addLog('Error: Could not read file bytes.');
         }
@@ -101,10 +123,94 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
     }
   }
 
+  void _loadModules(Sheet sheetModules) {
+    allModules.clear();
+    for (int i = 1; i < sheetModules.rows.length; i++) {
+      var row = sheetModules.rows[i];
+      // if (row.isEmpty || row[0]?.value == null || row[0]?.value.toString() == '#') {
+      //   continue;
+      // }
+
+      String getStr(int i) => (i < row.length && row[i]?.value != null) ? row[i]!.value.toString().trim() : '';
+      double getNum(int i) {
+        if (i >= row.length || row[i]?.value == null) return 0.0;
+        final val = row[i]!.value;
+        return double.tryParse(val.toString()) ?? 0.0;
+      }
+
+      final String num = getStr(0);
+      // final String programme = getStr(1);
+      final String mode = getStr(2);
+      final String moduleCode = getStr(3);
+      final String moduleName = getStr(4);
+      final double ects = getNum(5);
+      final double hours = getNum(6);
+      final String notes = getStr(7);
+      final double pct1 = getNum(8);
+      final String tutor1 = getStr(9);
+      final bool faculty1 = getNum(10) == 1;
+      final double hoursTutor1 = getNum(11);
+      final double pct2 = getNum(12);
+      final String tutor2 = getStr(13);
+      final bool faculty2 = getNum(14) == 1;
+      final double hoursTutor2 = getNum(15);
+
+      final module = Module(
+        num: num,
+        mode: mode,
+        moduleCode: moduleCode,
+        moduleName: moduleName,
+        ects: ects,
+        hours: hours,
+        notes: notes,
+        pct1: pct1,
+        tutor1: tutor1,
+        faculty1: faculty1,
+        hoursTutor1: hoursTutor1,
+        pct2: pct2,
+        tutor2: tutor2,
+        faculty2: faculty2,
+        hoursTutor2: hoursTutor2,
+      );
+      allModules.add(module);
+    }
+    _addLog('Loaded ${allModules.length} modules.');
+  }
+
+  void _loadAcademics(Sheet sheetAcademics) {
+    emailToAcademic.clear();
+    for (int i=1; i < sheetAcademics.rows.length; i++) {
+      var row = sheetAcademics.rows[i];
+      // if (row.isEmpty || row[0]?.value == null || row[0]?.value.toString() == '#') {
+      //   continue;
+      // }
+
+      String getStr(int i) => (i < row.length && row[i]?.value != null) ? row[i]!.value.toString().trim() : '';
+
+      final String email = getStr(0);
+      final String name = getStr(1);
+      final String role = getStr(2);
+      final String qualifications = getStr(3);
+      final String education = getStr(4);
+      final String expertise = getStr(5);
+
+      final academic = Academic(
+        email: email,
+        name: name,
+        role: role,
+        qualifications: qualifications,
+        education: education,
+        expertise: expertise,
+      );
+      emailToAcademic[email] = academic;
+    }
+    _addLog('Loaded ${emailToAcademic.length} academics.');
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Timetable Genie'),
