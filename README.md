@@ -1,0 +1,4 @@
+# ttgenie
+
+Timetable Genie
+
