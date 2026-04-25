@@ -36,6 +36,13 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
     });
   }
 
+
+  @override
+  void initState() {
+    super.initState();
+    _addLog('Console Log');
+  }
+
   @override
   void dispose() {
     _scrollController.dispose();
