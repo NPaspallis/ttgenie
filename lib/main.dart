@@ -103,10 +103,21 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Timetable Genie'),
+          actions: [
+            TextButton.icon(
+              onPressed: () {
+                _addLog('Uploading file ...');
+                _pickAndProcessFile();
+              },
+              icon: const Icon(Icons.upload),
+              label: const Text(
+                'Pick and Upload XLSX file'
+              ),
+            ),
+          ],
           bottom: const TabBar(
             isScrollable: true,
             tabs: [
-              Tab(icon: Icon(Icons.upload), text: 'Process'),
               Tab(icon: Icon(Icons.terminal), text: 'Logs'),
               Tab(icon: Icon(Icons.report_problem), text: 'Issues'),
               Tab(icon: Icon(Icons.calendar_today), text: 'Timetables'),
@@ -115,24 +126,7 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
         ),
         body: TabBarView(
           children: [
-            // Tab 1: Action Button
-            Center(
-              child: _isProcessing
-                  ? const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CircularProgressIndicator(),
-                        SizedBox(height: 16),
-                        Text('Processing Excel file...'),
-                      ],
-                    )
-                  : ElevatedButton.icon(
-                      onPressed: _pickAndProcessFile,
-                      icon: const Icon(Icons.upload_file),
-                      label: const Text('Pick and Process XLSX'),
-                    ),
-            ),
-            // Tab 2: Logs
+            // Tab 1: Logs
             Container(
               color: Colors.black,
               child: Theme(
@@ -165,7 +159,7 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
                 ),
               ),
             ),
-            // Tab 3: Issues Placeholder
+            // Tab 2: Issues Placeholder
             const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -177,7 +171,7 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
                 ],
               ),
             ),
-            // Tab 4: Timetables Placeholder
+            // Tab 3: Timetables Placeholder
             const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
