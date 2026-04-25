@@ -207,6 +207,25 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
     _addLog('Loaded ${emailToAcademic.length} academics.');
   }
 
+  static double _getHours(final Module module, final String email) {
+    if (module.tutor1 == email) {
+      return module.hoursTutor1;
+    } else if (module.tutor2 == email) {
+      return module.hoursTutor2;
+    } else {
+      return 0.0;
+    }
+  }
+
+  static Module? _getModule(final String moduleCode, final String mode) {
+    for (Module module in allModules) {
+      if (module.moduleCode == moduleCode && module.mode == mode) {
+        return module;
+      }
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
