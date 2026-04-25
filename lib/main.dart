@@ -27,9 +27,10 @@ class ExcelProcessor extends StatefulWidget {
 class _ExcelProcessorState extends State<ExcelProcessor> {
   final List<String> _logs = [];
   final ScrollController _scrollController = ScrollController();
+  bool _isProcessing = false;
 
   void _addLog(String message) {
-    debugPrint(message);
+    // debugPrint(message);
     setState(() {
       _logs.add(message);
     });
@@ -42,6 +43,10 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
   }
 
   Future<void> _pickAndProcessFile() async {
+    setState(() {
+      _isProcessing = true;
+    });
+
     try {
       // 1. Allow the user to pick a file of XLSX type
       FilePickerResult? result = await FilePicker.pickFiles(
@@ -54,6 +59,8 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
         // 2. Upload it (read the bytes) and process it
         final bytes = result.files.single.bytes;
         if (bytes != null) {
+          // Perform decoding in a slight delay if it's very fast to show the spinner
+          // or just proceed if it's naturally heavy.
           var excel = Excel.decodeBytes(bytes);
 
           // 3. Print the contents in the log
@@ -75,6 +82,10 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
       }
     } catch (e) {
       _addLog('Error picking or processing file: $e');
+    } finally {
+      setState(() {
+        _isProcessing = false;
+      });
     }
   }
 
@@ -99,11 +110,20 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
           children: [
             // Tab 1: Action Button
             Center(
-              child: ElevatedButton.icon(
-                onPressed: _pickAndProcessFile,
-                icon: const Icon(Icons.upload_file),
-                label: const Text('Pick and Process XLSX'),
-              ),
+              child: _isProcessing
+                  ? const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(),
+                        SizedBox(height: 16),
+                        Text('Processing Excel file...'),
+                      ],
+                    )
+                  : ElevatedButton.icon(
+                      onPressed: _pickAndProcessFile,
+                      icon: const Icon(Icons.upload_file),
+                      label: const Text('Pick and Process XLSX'),
+                    ),
             ),
             // Tab 2: Logs
             Container(
