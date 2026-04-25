@@ -2,8 +2,8 @@ import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
-import 'Academic.dart';
-import 'Module.dart';
+import 'academic.dart';
+import 'module.dart';
 
 void main() {
   runApp(const MyApp());
