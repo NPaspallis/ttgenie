@@ -33,6 +33,17 @@ class ExcelProcessor extends StatefulWidget {
 }
 
 class _ExcelProcessorState extends State<ExcelProcessor> {
+  static const Map<String,String> labs = {
+    "CY014": "Computer Lab CY014 (Capacity 32)",
+    "CY114": "Computer Lab CY114 (Capacity 32)",
+    "CY111": "Computer Lab CY111 (Capacity 20)",
+    "CY112": "Computer Lab CY112 (Capacity 18)",
+    "CYCSL": "CISCO Lab CYCSL (Capacity 20)",
+    "CY020": "Electronics Lab",
+    "CY021": "Engineering Lab"
+  };
+
+
   final List<String> _logs = [];
   final ScrollController _scrollController = ScrollController();
   bool _isProcessing = false;
@@ -93,6 +104,13 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
           _addLog('Sheets titles: ${excel.tables.keys.join(', ')}');
 
           // 3. Read data in data structures
+          var sheetData = excel.tables['data'];
+          if (sheetData != null) {
+            _addLog('Processing timetable data ...');
+            _loadTimetableEntries(sheetData);
+            _addLog('Loaded timetable entries for ${moduleCodeToTimetableEntryMap.length} modules.');
+          }
+
           var sheetModules = excel.tables['modules']!;
           _addLog('Processing modules ...');
           _loadModules(sheetModules);
@@ -103,12 +121,10 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
           _loadAcademics(sheetAcademics);
           _addLog('Loaded ${emailToAcademic.length} academics');
 
-          var sheetData = excel.tables['data'];
-          if (sheetData != null) {
-            _addLog('Processing timetable data ...');
-            _loadTimetableEntries(sheetData);
-            _addLog('Loaded timetable entries for ${moduleCodeToTimetableEntryMap.length} modules.');
-          }
+          var sheetTimetables = excel.tables['timetables']!;
+          _addLog('Processing timetable data ...');
+          _loadTimetableViewEntries(sheetTimetables);
+          _addLog('Loaded ${timetableViewEntries.length} timetable entries.');
 
           // 4. generate timetables
           _addLog('academicIdToTimetableEntryMap keys: ${academicIdToTimetableEntryMap.keys}');
@@ -117,9 +133,7 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
           List<TimetableEntry>? selectedTimetableEntries = academicIdToTimetableEntryMap[academicEmail];
           _addLog('Generating timetable for ${academic?.name} who has ${selectedTimetableEntries?.length} entries.');
           String html = AcademicUtil.createAcademicTimetablesAsHtml(academic!, selectedTimetableEntries, 0);
-          _addLog('Generated html: $html');
           setState(() => _htmlTimetable = html);
-          debugPrint('Generated html: $html');
 
         } else {
           _addLog('Error: Could not read file bytes.');
@@ -276,6 +290,35 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
         notes: notes,
       );
       emailToAcademic[email] = academic;
+    }
+  }
+
+  void _loadTimetableViewEntries(Sheet timetableViewEntriesSheet) {
+    timetableViewEntries.clear();
+    for (int i = 1; i < timetableViewEntriesSheet.rows.length; i++) {
+      var row = timetableViewEntriesSheet.rows[i];
+      if (row.isEmpty) continue;
+
+      String getStr(int index) => (index < row.length && row[index]?.value != null) ? row[index]!.value.toString().trim() : '';
+
+      String type = getStr(0);
+      String programme = getStr(1);
+      bool distanceLearning = "true" == getStr(2).toLowerCase();
+      String name = getStr(3);
+
+      List<String> values = [];
+      for (int j = 4; j < row.length; j++) {
+        String val = getStr(j);
+        if (val.isEmpty) break;
+        values.add(val);
+      }
+      timetableViewEntries.add(TimetableViewEntry(
+        type: type,
+        programme: programme,
+        distanceLearning: distanceLearning,
+        name: name,
+        values: values,
+      ));
     }
   }
 

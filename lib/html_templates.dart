@@ -1,5 +1,5 @@
 class HtmlTemplates {
-  static const String htmlTable = r'''
+static const String htmlTable = r'''
 <html lang="en">
 
 <style>
