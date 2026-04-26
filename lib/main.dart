@@ -2,8 +2,13 @@ import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
+import 'academic_util.dart';
+import 'timetable_entry.dart';
 import 'academic.dart';
 import 'module.dart';
+import 'structure_row.dart';
+import 'util.dart';
+import 'timetable_view.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,10 +37,16 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
   final ScrollController _scrollController = ScrollController();
   bool _isProcessing = false;
 
+  static final Map<String, List<TimetableEntry>> moduleCodeToTimetableEntryMap = {};
+  static final Map<String, List<TimetableEntry>> academicIdToTimetableEntryMap = {};
+  static final List<TimetableEntry> timetableEntries = [];
   static final Set<Module> allModules = {};
-  // static final Map<String, List<StructureRow>> programmeToStructureRowsMap = {};
-  // static final Map<Module, List<String>> moduleToProgrammesMap = {};
+  static final Map<String, List<StructureRow>> programmeToStructureRowsMap = {};
+  static final Map<Module, List<String>> moduleToProgrammesMap = {};
   static final Map<String, Academic> emailToAcademic = {};
+  static final List<TimetableViewEntry> timetableViewEntries = [];
+
+  String _htmlTimetable = '';
 
   void _addLog(String message) {
     // debugPrint(message);
@@ -43,7 +54,6 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
       _logs.add(message);
     });
   }
-
 
   @override
   void initState() {
@@ -71,8 +81,6 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
       );
 
       if (result != null) {
-        _addLog('File selected: ${result.files.single.name}');
-        _addLog('Processing...');
 
         // 2. Upload it (read the bytes) and process it
         final bytes = result.files.single.bytes;
@@ -84,30 +92,35 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
           _addLog('Sheets number: ${excel.tables.keys.length}');
           _addLog('Sheets titles: ${excel.tables.keys.join(', ')}');
 
-          // 3. Print the contents in the log
-          for (var table in excel.tables.keys) {
-            _addLog('--- Sheet: $table ---');
-
-            // var sheet = excel.tables[table]!;
-            // for (var row in sheet.rows) {
-            //   // Extract values from each cell in the row
-            //   var rowValues = row.map((cell) => cell?.value?.toString() ?? '').toList();
-            //   _addLog('Row: $rowValues');
-            // }
-          }
-
+          // 3. Read data in data structures
           var sheetModules = excel.tables['modules']!;
           _addLog('Processing modules ...');
           _loadModules(sheetModules);
+          _addLog('Loaded ${allModules.length} modules');
 
           var sheetAcademics = excel.tables['academics']!;
           _addLog('Processing academics ...');
           _loadAcademics(sheetAcademics);
+          _addLog('Loaded ${emailToAcademic.length} academics');
 
-          _addLog('Modules:');
-          _addLog(allModules.toString());
-          _addLog('Academics:');
-          _addLog(emailToAcademic.toString());
+          var sheetData = excel.tables['data'];
+          if (sheetData != null) {
+            _addLog('Processing timetable data ...');
+            _loadTimetableEntries(sheetData);
+            _addLog('Loaded timetable entries for ${moduleCodeToTimetableEntryMap.length} modules.');
+          }
+
+          // 4. generate timetables
+          _addLog('academicIdToTimetableEntryMap keys: ${academicIdToTimetableEntryMap.keys}');
+          String academicEmail = 'apiki'; // todo change
+          Academic? academic = emailToAcademic[academicEmail];
+          List<TimetableEntry>? selectedTimetableEntries = academicIdToTimetableEntryMap[academicEmail];
+          _addLog('Generating timetable for ${academic?.name} who has ${selectedTimetableEntries?.length} entries.');
+          String html = AcademicUtil.createAcademicTimetablesAsHtml(academic!, selectedTimetableEntries, 0);
+          _addLog('Generated html: $html');
+          setState(() => _htmlTimetable = html);
+          debugPrint('Generated html: $html');
+
         } else {
           _addLog('Error: Could not read file bytes.');
         }
@@ -120,6 +133,67 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
       setState(() {
         _isProcessing = false;
       });
+    }
+  }
+
+  void _loadTimetableEntries(Sheet sheetTimetables) {
+    moduleCodeToTimetableEntryMap.clear();
+    academicIdToTimetableEntryMap.clear();
+
+    for (int i = 1; i < sheetTimetables.rows.length; i++) {
+      var row = sheetTimetables.rows[i];
+      if (row.isEmpty || row[2]?.value == null) continue;
+
+      String getStr(int i) => (i < row.length && row[i]?.value != null) ? row[i]!.value.toString().trim() : '';
+      double getNum(int i) {
+        if (i >= row.length || row[i]?.value == null) return 0.0;
+        final val = row[i]!.value;
+        return double.tryParse(val.toString()) ?? 0.0;
+      }
+
+      final String recurrenceType = getStr(0);
+      final String academicPeriodCode = getStr(1);
+      final String dayName = getStr(2);
+      final String moduleCode = getStr(3);
+      final String moduleName = getStr(4);
+      final TimeCellValue startTime = row[5]!.value as TimeCellValue;
+      final TimeCellValue endTime = row[6]!.value as TimeCellValue;
+      final String sessionTypeName = getStr(7);
+      final DateCellValue startDate = row[8]!.value as DateCellValue;
+      final DateCellValue endDate = row[9]!.value as DateCellValue;
+      final String deliveryTypeName = getStr(10);
+      final String roomCode = getStr(11);
+      final String instructorId = getStr(12);
+      final int expNoStudents = getNum(13).toInt();
+      final String roomType = getStr(14);
+      final String groupName = getStr(15);
+      final String notes = getStr(16);
+
+      if (moduleCode.isEmpty) continue;
+
+      final timetableEntry = TimetableEntry(
+        recurrenceTypeName: recurrenceType,
+        periodName: academicPeriodCode,
+        dayName: dayName,
+        moduleCode: moduleCode,
+        moduleName: moduleName,
+        startTime: DateTime(2026, 1, 1, startTime.hour, startTime.minute),
+        endTime: DateTime(2026, 1, 1, endTime.hour, endTime.minute),
+        sessionTypeName: sessionTypeName,
+        startDate: DateTime(startDate.year, startDate.month, startDate.day),
+        endDate: DateTime(endDate.year, endDate.month, endDate.day),
+        deliveryTypeName: deliveryTypeName,
+        roomCode: roomCode,
+        lecturerEmail: instructorId,
+        expNoStudents: expNoStudents,
+        roomType: roomType,
+        groupName: groupName,
+        notes: notes,
+      );
+
+      moduleCodeToTimetableEntryMap.putIfAbsent(moduleCode, () => []).add(timetableEntry);
+      academicIdToTimetableEntryMap.putIfAbsent(instructorId, () => []).add(timetableEntry);
+      timetableEntries.add(timetableEntry);
     }
   }
 
@@ -174,7 +248,6 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
       );
       allModules.add(module);
     }
-    _addLog('Loaded ${allModules.length} modules.');
   }
 
   void _loadAcademics(Sheet sheetAcademics) {
@@ -191,39 +264,61 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
       final String name = getStr(1);
       final String role = getStr(2);
       final String qualifications = getStr(3);
-      final String education = getStr(4);
-      final String expertise = getStr(5);
+      final bool skip = getStr(4).toLowerCase() == "skip";
+      final String notes = getStr(5);
 
       final academic = Academic(
         email: email,
         name: name,
         role: role,
         qualifications: qualifications,
-        education: education,
-        expertise: expertise,
+        skip: skip,
+        notes: notes,
       );
       emailToAcademic[email] = academic;
     }
-    _addLog('Loaded ${emailToAcademic.length} academics.');
   }
 
-  static double _getHours(final Module module, final String email) {
-    if (module.tutor1 == email) {
-      return module.hoursTutor1;
-    } else if (module.tutor2 == email) {
-      return module.hoursTutor2;
-    } else {
-      return 0.0;
-    }
-  }
+  // keep this unused for now
+  void _loadStructures(Sheet sheetStructures) {
+    programmeToStructureRowsMap.clear();
+    moduleToProgrammesMap.clear();
 
-  static Module? _getModule(final String moduleCode, final String mode) {
-    for (Module module in allModules) {
-      if (module.moduleCode == moduleCode && module.mode == mode) {
-        return module;
+    for (int i = 2; i < sheetStructures.rows.length; i++) {
+      var row = sheetStructures.rows[i];
+      if (row.isEmpty || row[1]?.value == null) continue;
+
+      String getStr(int i) => (i < row.length && row[i]?.value != null) ? row[i]!.value.toString().trim() : '';
+      double getNum(int i) {
+        if (i >= row.length || row[i]?.value == null) return 0.0;
+        final val = row[i]!.value;
+        return double.tryParse(val.toString()) ?? 0.0;
+      }
+
+      final String programme = getStr(1);
+      final String mode = getStr(2);
+      final String moduleCode = getStr(3);
+      final double facultyHours = getNum(4);
+      final double associatesHours = getNum(5);
+
+      final structureRow = StructureRow(
+        programme: programme,
+        mode: mode,
+        moduleCode: moduleCode,
+        facultyHours: facultyHours,
+        associatesHours: associatesHours,
+      );
+
+      // populate programmeToStructureRowsMap
+      programmeToStructureRowsMap.putIfAbsent(programme, () => []).add(structureRow);
+
+      // populate modulesToProgrammesMap
+      final module = Util.getModule(allModules, moduleCode, mode);
+      if (module != null) {
+        moduleToProgrammesMap.putIfAbsent(module, () => []).add(programme);
       }
     }
-    return null;
+    _addLog('Loaded structures for ${programmeToStructureRowsMap.length} programmes.');
   }
 
   @override
@@ -302,16 +397,18 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
               ),
             ),
             // Tab 3: Timetables Placeholder
-            const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.calendar_today, size: 64, color: Colors.blue),
-                  SizedBox(height: 16),
-                  Text('Timetables', style: TextStyle(fontSize: 24)),
-                  Text('The processed timetables will be displayed here.'),
-                ],
-              ),
+            Center(
+              child: _htmlTimetable.isEmpty ?
+                const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.calendar_today, size: 64, color: Colors.blue),
+                    SizedBox(height: 16),
+                    Text('Timetables', style: TextStyle(fontSize: 24)),
+                    Text('The processed timetables will be displayed here.'),
+                  ],
+                ) :
+                TimetableView(html: _htmlTimetable),
             ),
           ],
         ),

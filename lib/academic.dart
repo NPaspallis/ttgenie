@@ -3,16 +3,16 @@ class Academic {
   final String name;
   final String role;
   final String qualifications;
-  final String education;
-  final String expertise;
+  final bool skip;
+  final String notes;
 
   Academic({
     required this.email,
     required this.name,
     required this.role,
     required this.qualifications,
-    required this.education,
-    required this.expertise,
+    required this.skip,
+    required this.notes,
   });
 
   int get educationRank {
@@ -34,8 +34,8 @@ class Academic {
         'name=\'$name\', '
         'role=\'$role\', '
         'qualifications=\'$qualifications\', '
-        'education=\'$education\', '
-        'expertise=\'$expertise\', '
+        'skip=\'$skip\', '
+        'notes=\'$notes\', '
         'faculty=$isFaculty'
         '}';
   }
