@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -406,7 +407,7 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
     }
 
     try {
-      final bytes = utf8.encode(_htmlTimetable);
+      final Uint8List bytes = Uint8List.fromList(utf8.encode(_htmlTimetable));
       if (kIsWeb) {
         final blob = html.Blob([bytes]);
         final url = html.Url.createObjectUrlFromBlob(blob);
@@ -416,6 +417,8 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
         html.Url.revokeObjectUrl(url);
         _addLog('HTML download triggered in browser.');
       } else {
+        // FilePicker.saveFile handles the writing on Desktop if 'bytes' is provided.
+        // It returns null on mobile platforms.
         String? result = await FilePicker.saveFile(
           fileName: 'timetable.html',
           type: FileType.custom,
@@ -424,6 +427,8 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
         );
         if (result != null) {
           _addLog('HTML saved: $result');
+        } else {
+          _addLog('Save canceled or not supported on this platform.');
         }
       }
     } catch (e) {
