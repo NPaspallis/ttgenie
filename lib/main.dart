@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:universal_html/html.dart' as html;
 
 import 'academic_util.dart';
-import 'html_util.dart';
 import 'timetable_entry.dart';
 import 'academic.dart';
 import 'module.dart';
@@ -397,6 +399,38 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
     _addLog('Loaded structures for ${programmeToStructureRowsMap.length} programmes.');
   }
 
+  Future<void> _downloadHtml() async {
+    if (_htmlTimetable.isEmpty) {
+      _addLog('No HTML to download.');
+      return;
+    }
+
+    try {
+      final bytes = utf8.encode(_htmlTimetable);
+      if (kIsWeb) {
+        final blob = html.Blob([bytes]);
+        final url = html.Url.createObjectUrlFromBlob(blob);
+        final anchor = html.AnchorElement(href: url)
+          ..setAttribute("download", "timetable.html")
+          ..click();
+        html.Url.revokeObjectUrl(url);
+        _addLog('HTML download triggered in browser.');
+      } else {
+        String? result = await FilePicker.saveFile(
+          fileName: 'timetable.html',
+          type: FileType.custom,
+          allowedExtensions: ['html'],
+          bytes: bytes,
+        );
+        if (result != null) {
+          _addLog('HTML saved: $result');
+        }
+      }
+    } catch (e) {
+      _addLog('Error saving HTML: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -411,9 +445,7 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
                 _pickAndProcessFile();
               },
               icon: const Icon(Icons.upload),
-              label: const Text(
-                'Pick and Upload XLSX file'
-              ),
+              label: const Text('Pick XLSX file'),
             ),
           ],
           bottom: const TabBar(
@@ -488,6 +520,13 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
             ),
           ],
         ),
+        floatingActionButton: _htmlTimetable.isEmpty
+            ? null
+            : FloatingActionButton(
+                onPressed: _downloadHtml,
+                tooltip: 'Download HTML Timetable',
+                child: const Icon(Icons.download),
+              ),
       ),
     );
   }
