@@ -1,7 +1,7 @@
 import 'package:ttgenie/timetable_view.dart';
 
-import 'html_util.dart';
-import 'timetable_entry.dart';
+import '../html_util.dart';
+import '../model/data_entry.dart';
 import 'package:intl/intl.dart';
 
 class TimetableUtil {

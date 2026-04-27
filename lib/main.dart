@@ -6,11 +6,12 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:universal_html/html.dart' as html;
 
-import 'academic_util.dart';
-import 'timetable_entry.dart';
-import 'academic.dart';
-import 'module.dart';
-import 'structure_row.dart';
+import 'html_generators/academic_util.dart';
+import 'html_generators/timetable_util.dart';
+import 'model/data_entry.dart';
+import 'model/academic.dart';
+import 'model/module.dart';
+import 'model/structure_row.dart';
 import 'util.dart';
 import 'timetable_view.dart';
 
@@ -37,7 +38,7 @@ class ExcelProcessor extends StatefulWidget {
 }
 
 class _ExcelProcessorState extends State<ExcelProcessor> {
-  static const Map<String,String> labs = {
+  static const Map<String,String> labs = {//todo delete
     "CY014": "Computer Lab CY014 (Capacity 32)",
     "CY114": "Computer Lab CY114 (Capacity 32)",
     "CY111": "Computer Lab CY111 (Capacity 20)",
@@ -143,30 +144,30 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
           _addLog('Loaded ${allProgrammes.length} programmes.');
 
           // 6. generate timetables
-          String combinedHtml = "";
-          bool includeAcademicsTimetables = true;
-          // for(final String programme in allProgrammes) {
-          //   final TreeSet<String> moduleCodes = programmeToModuleCodes.get(programme);
-          //   final TreeSet<Academic> academics = programmeToAcademics.get(programme);
-          //   final List<TimetableViewEntry> timetableViewEntries = programmeToTimetableViewEntries[programme] ?? [];
-          //
-          //   final String html = HtmlUtil.createHtmlForProgramme(
-          //       programme,
-          //       moduleCodes,
-          //       academics,
-          //       timetableViewEntries,
-          //       includeAcademicsTimetables,
-          //       allModuleCodeToModules,
-          //       moduleCodeToTimetableEntryMap,
-          //       academicIdToTimetableEntryMap);
-          //   combinedHtml += "$html\n\n";
-          // }
+          String htmlProgrammes = "";
+          for(TimetableViewEntry timetableViewEntry in timetableViewEntries) {
+            if(timetableViewEntry.type == 'Modules') {
+              List<TimetableEntry> selectedTimetableEntries = [];
+              for(String moduleCode in timetableViewEntry.values) {
+                selectedTimetableEntries.addAll(moduleCodeToTimetableEntryMap[moduleCode] ?? []);
+              }
 
-          // _addLog('academicIdToTimetableEntryMap keys: ${academicIdToTimetableEntryMap.keys}');
-          String academicEmail = 'apiki'; // todo change
-          Academic? academic = emailToAcademic[academicEmail];
-          List<TimetableEntry>? selectedTimetableEntries = academicIdToTimetableEntryMap[academicEmail.toLowerCase()];
-          String html = AcademicUtil.createAcademicTimetablesAsHtml(academic!, selectedTimetableEntries, 0);
+              htmlProgrammes += '${TimetableUtil.getTimetableFromTimetableEntriesAsHtml(timetableViewEntry.name, selectedTimetableEntries)}\n\n';
+            }
+          }
+
+          String htmlAcademics = '';
+          for(String academicId in academicIdToTimetableEntryMap.keys) {
+            // _addLog('academicId: $academicId');
+            Academic academic = emailToAcademic[academicId]!;
+            // _addLog('academic: $academic');
+            List<TimetableEntry> selectedTimetableEntries = academicIdToTimetableEntryMap[academicId]!;
+            htmlAcademics += '${AcademicUtil.createAcademicTimetablesAsDiv(academic, selectedTimetableEntries, 0)}\n\n';
+          }
+
+          // todo add academics
+          // String html = AcademicUtil.htmlPage.replaceAll('%html%', htmlAcademics);
+          String html = AcademicUtil.htmlPage.replaceAll('%html%', htmlProgrammes);
           setState(() => _htmlTimetable = html);
 
         } else {

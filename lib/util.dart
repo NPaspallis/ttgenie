@@ -1,4 +1,4 @@
-import 'module.dart';
+import 'model/module.dart';
 
 class Util {
 

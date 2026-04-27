@@ -1,4 +1,3 @@
-import 'package:excel/excel.dart';
 import 'package:intl/intl.dart';
 
 class TimetableEntry {

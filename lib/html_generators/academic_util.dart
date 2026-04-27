@@ -1,6 +1,6 @@
 import 'dart:collection';
-import 'academic.dart';
-import 'timetable_entry.dart';
+import '../model/academic.dart';
+import '../model/data_entry.dart';
 import 'timetable_util.dart';
 
 class AcademicUtil {
