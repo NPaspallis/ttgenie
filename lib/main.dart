@@ -3,6 +3,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import 'academic_util.dart';
+import 'html_util.dart';
 import 'timetable_entry.dart';
 import 'academic.dart';
 import 'module.dart';
@@ -52,10 +53,13 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
   static final Map<String, List<TimetableEntry>> academicIdToTimetableEntryMap = {};
   static final List<TimetableEntry> timetableEntries = [];
   static final Set<Module> allModules = {};
+  static final Map<String, Module> allModuleCodeToModules = {};
   static final Map<String, List<StructureRow>> programmeToStructureRowsMap = {};
   static final Map<Module, List<String>> moduleToProgrammesMap = {};
   static final Map<String, Academic> emailToAcademic = {};
   static final List<TimetableViewEntry> timetableViewEntries = [];
+  static final List<String> allProgrammes = [];
+  static final Map<String, List<TimetableViewEntry>> programmeToTimetableViewEntries = {};
 
   String _htmlTimetable = '';
 
@@ -126,12 +130,39 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
           _loadTimetableViewEntries(sheetTimetables);
           _addLog('Loaded ${timetableViewEntries.length} timetable entries.');
 
-          // 4. generate timetables
-          _addLog('academicIdToTimetableEntryMap keys: ${academicIdToTimetableEntryMap.keys}');
+
+          // 5. populate allProgrammes from timetableViewEntries
+          for (var entry in timetableViewEntries) {
+            if (entry.type == "Modules" && !allProgrammes.contains(entry.programme)) {
+              allProgrammes.add(entry.programme);
+            }
+          }
+          _addLog('Loaded ${allProgrammes.length} programmes.');
+
+          // 6. generate timetables
+          String combinedHtml = "";
+          bool includeAcademicsTimetables = true;
+          // for(final String programme in allProgrammes) {
+          //   final TreeSet<String> moduleCodes = programmeToModuleCodes.get(programme);
+          //   final TreeSet<Academic> academics = programmeToAcademics.get(programme);
+          //   final List<TimetableViewEntry> timetableViewEntries = programmeToTimetableViewEntries[programme] ?? [];
+          //
+          //   final String html = HtmlUtil.createHtmlForProgramme(
+          //       programme,
+          //       moduleCodes,
+          //       academics,
+          //       timetableViewEntries,
+          //       includeAcademicsTimetables,
+          //       allModuleCodeToModules,
+          //       moduleCodeToTimetableEntryMap,
+          //       academicIdToTimetableEntryMap);
+          //   combinedHtml += "$html\n\n";
+          // }
+
+          // _addLog('academicIdToTimetableEntryMap keys: ${academicIdToTimetableEntryMap.keys}');
           String academicEmail = 'apiki'; // todo change
           Academic? academic = emailToAcademic[academicEmail];
-          List<TimetableEntry>? selectedTimetableEntries = academicIdToTimetableEntryMap[academicEmail];
-          _addLog('Generating timetable for ${academic?.name} who has ${selectedTimetableEntries?.length} entries.');
+          List<TimetableEntry>? selectedTimetableEntries = academicIdToTimetableEntryMap[academicEmail.toLowerCase()];
           String html = AcademicUtil.createAcademicTimetablesAsHtml(academic!, selectedTimetableEntries, 0);
           setState(() => _htmlTimetable = html);
 
@@ -177,11 +208,12 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
       final DateCellValue endDate = row[9]!.value as DateCellValue;
       final String deliveryTypeName = getStr(10);
       final String roomCode = getStr(11);
-      final String instructorId = getStr(12);
+      final String instructorName = getStr(12); // ignore for now
       final int expNoStudents = getNum(13).toInt();
       final String roomType = getStr(14);
       final String groupName = getStr(15);
-      final String notes = getStr(16);
+      final String instructorId = getStr(16);
+      final String notes = getStr(17);
 
       if (moduleCode.isEmpty) continue;
 
@@ -206,7 +238,7 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
       );
 
       moduleCodeToTimetableEntryMap.putIfAbsent(moduleCode, () => []).add(timetableEntry);
-      academicIdToTimetableEntryMap.putIfAbsent(instructorId, () => []).add(timetableEntry);
+      academicIdToTimetableEntryMap.putIfAbsent(instructorId.toLowerCase(), () => []).add(timetableEntry);
       timetableEntries.add(timetableEntry);
     }
   }
@@ -261,6 +293,7 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
         hoursTutor2: hoursTutor2,
       );
       allModules.add(module);
+      allModuleCodeToModules[moduleCode] = module;
     }
   }
 
@@ -268,9 +301,6 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
     emailToAcademic.clear();
     for (int i=1; i < sheetAcademics.rows.length; i++) {
       var row = sheetAcademics.rows[i];
-      // if (row.isEmpty || row[0]?.value == null || row[0]?.value.toString() == '#') {
-      //   continue;
-      // }
 
       String getStr(int i) => (i < row.length && row[i]?.value != null) ? row[i]!.value.toString().trim() : '';
 
@@ -312,14 +342,17 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
         if (val.isEmpty) break;
         values.add(val);
       }
-      timetableViewEntries.add(TimetableViewEntry(
+      TimetableViewEntry timetableViewEntry = TimetableViewEntry(
         type: type,
         programme: programme,
         distanceLearning: distanceLearning,
         name: name,
         values: values,
-      ));
+      );
+      timetableViewEntries.add(timetableViewEntry);
+      programmeToTimetableViewEntries.putIfAbsent(programme, () => []).add(timetableViewEntry);
     }
+
   }
 
   // keep this unused for now

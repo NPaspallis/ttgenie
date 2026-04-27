@@ -1,3 +1,5 @@
+import 'package:ttgenie/timetable_view.dart';
+
 import 'html_util.dart';
 import 'timetable_entry.dart';
 import 'package:intl/intl.dart';
@@ -6,7 +8,7 @@ class TimetableUtil {
   static const int lunchStartHour = 11;
   static const int lunchEndHour = 15;
 
-  static String getTimetableFromTimetableEntries(
+  static String getTimetableFromTimetableEntriesAsHtml(
       final String title, List<TimetableEntry> selectedTimetableEntries) {
     
     String html = "<h3>$title</h3>";
@@ -134,5 +136,14 @@ class TimetableUtil {
     }
 
     return "<table>$html</table>";
+  }
+
+  static String getTimetableFromModulesTimetableViewEntryAsHtml(
+      final String title, TimetableViewEntry selectedTimetableViewEntry) {
+    final List<String> selectedModuleCodes = selectedTimetableViewEntry.values;
+    List<TimetableEntry> selectedTimetableEntries = [];
+    //todo
+
+    return getTimetableFromTimetableEntriesAsHtml(title, selectedTimetableEntries);
   }
 }

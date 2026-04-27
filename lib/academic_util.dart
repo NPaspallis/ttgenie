@@ -98,13 +98,13 @@ class AcademicUtil {
 
     if (moduleCodes.isNotEmpty) {
       if (!sem1 && !sem2) {
-        html += TimetableUtil.getTimetableFromTimetableEntries("Full Year", timetableEntries ?? []);
+        html += TimetableUtil.getTimetableFromTimetableEntriesAsHtml("Full Year", timetableEntries ?? []);
       } else {
-        html += TimetableUtil.getTimetableFromTimetableEntries("Semester 1", sem1TimetableEntries);
-        html += TimetableUtil.getTimetableFromTimetableEntries("Semester 2", sem2TimetableEntries);
+        html += TimetableUtil.getTimetableFromTimetableEntriesAsHtml("Semester 1", sem1TimetableEntries);
+        html += TimetableUtil.getTimetableFromTimetableEntriesAsHtml("Semester 2", sem2TimetableEntries);
       }
       if (sem3) {
-        html += TimetableUtil.getTimetableFromTimetableEntries("Semester 3", sem3TimetableEntries);
+        html += TimetableUtil.getTimetableFromTimetableEntriesAsHtml("Semester 3", sem3TimetableEntries);
       }
     }
 
