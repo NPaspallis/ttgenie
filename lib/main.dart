@@ -4,6 +4,8 @@ import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:ttgenie/html_templates.dart';
+import 'package:ttgenie/html_util.dart';
 import 'package:universal_html/html.dart' as html;
 
 import 'html_generators/academic_util.dart';
@@ -12,6 +14,7 @@ import 'model/data_entry.dart';
 import 'model/academic.dart';
 import 'model/module.dart';
 import 'model/structure_row.dart';
+import 'model/timetable_view_entry.dart';
 import 'util.dart';
 import 'timetable_view.dart';
 
@@ -38,15 +41,15 @@ class ExcelProcessor extends StatefulWidget {
 }
 
 class _ExcelProcessorState extends State<ExcelProcessor> {
-  static const Map<String,String> labs = {//todo delete
-    "CY014": "Computer Lab CY014 (Capacity 32)",
-    "CY114": "Computer Lab CY114 (Capacity 32)",
-    "CY111": "Computer Lab CY111 (Capacity 20)",
-    "CY112": "Computer Lab CY112 (Capacity 18)",
-    "CYCSL": "CISCO Lab CYCSL (Capacity 20)",
-    "CY020": "Electronics Lab",
-    "CY021": "Engineering Lab"
-  };
+  // static const Map<String,String> labs = {//todo delete
+  //   "CY014": "Computer Lab CY014 (Capacity 32)",
+  //   "CY114": "Computer Lab CY114 (Capacity 32)",
+  //   "CY111": "Computer Lab CY111 (Capacity 20)",
+  //   "CY112": "Computer Lab CY112 (Capacity 18)",
+  //   "CYCSL": "CISCO Lab CYCSL (Capacity 20)",
+  //   "CY020": "Electronics Lab",
+  //   "CY021": "Engineering Lab"
+  // };
 
 
   final List<String> _logs = [];
@@ -64,6 +67,8 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
   static final List<TimetableViewEntry> timetableViewEntries = [];
   static final List<String> allProgrammes = [];
   static final Map<String, List<TimetableViewEntry>> programmeToTimetableViewEntries = {};
+  static final Map<String, String> academicsEmailToName = {};
+  static final Set<String> labs = {};
 
   String _htmlTimetable = '';
 
@@ -167,7 +172,9 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
 
           // todo add academics
           // String html = AcademicUtil.htmlPage.replaceAll('%html%', htmlAcademics);
-          String html = AcademicUtil.htmlPage.replaceAll('%html%', htmlProgrammes);
+          // String html = AcademicUtil.htmlPage.replaceAll('%html%', htmlProgrammes);
+          String htmlNavbar = HtmlUtil.createNavbar(timetableViewEntries, academicsEmailToName, labs.toList());
+          String html = HtmlTemplates.htmlPageModern.replaceAll('%navbar%', htmlNavbar);
           setState(() => _htmlTimetable = html);
 
         } else {
@@ -244,6 +251,10 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
       moduleCodeToTimetableEntryMap.putIfAbsent(moduleCode, () => []).add(timetableEntry);
       academicIdToTimetableEntryMap.putIfAbsent(instructorId.toLowerCase(), () => []).add(timetableEntry);
       timetableEntries.add(timetableEntry);
+      academicsEmailToName[instructorId.toLowerCase()] = instructorName;
+      if(roomCode.isNotEmpty && roomType == '2') {
+        labs.add(roomCode);
+      }
     }
   }
 
@@ -336,18 +347,20 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
       String getStr(int index) => (index < row.length && row[index]?.value != null) ? row[index]!.value.toString().trim() : '';
 
       String type = getStr(0);
-      String programme = getStr(1);
-      bool distanceLearning = "true" == getStr(2).toLowerCase();
-      String name = getStr(3);
+      String group = getStr(1);
+      String programme = getStr(2);
+      bool distanceLearning = "true" == getStr(3).toLowerCase();
+      String name = getStr(4);
 
       List<String> values = [];
-      for (int j = 4; j < row.length; j++) {
+      for (int j = 5; j < row.length; j++) {
         String val = getStr(j);
         if (val.isEmpty) break;
         values.add(val);
       }
       TimetableViewEntry timetableViewEntry = TimetableViewEntry(
         type: type,
+        group: group,
         programme: programme,
         distanceLearning: distanceLearning,
         name: name,

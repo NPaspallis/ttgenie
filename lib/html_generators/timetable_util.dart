@@ -4,6 +4,8 @@ import '../html_util.dart';
 import '../model/data_entry.dart';
 import 'package:intl/intl.dart';
 
+import '../model/timetable_view_entry.dart';
+
 class TimetableUtil {
   static const int lunchStartHour = 11;
   static const int lunchEndHour = 15;
