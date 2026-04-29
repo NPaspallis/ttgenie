@@ -1,7 +1,5 @@
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
-
 import 'model/data_entry.dart';
 import 'model/timetable_view_entry.dart';
 
@@ -60,23 +58,6 @@ class HtmlUtil {
 
       htmlProgrammes += '</div>\n\n';
     }
-
-    // debugPrint('programmeToTimetableViewEntries: $programmeToTimetableViewEntries');//todo delete
-    // final List<String> programmes = programmeToTimetableViewEntries.keys.toList();
-    // debugPrint('programmes: $programmes');//todo delete
-    // programmes.sort();
-    // debugPrint('sorted');//todo delete
-    // for(String programme in programmes) {
-    //   htmlProgrammes += '<p><span>$programme</span></p>';
-    //   List<TimetableViewEntry> selectedTimetableViewEntries = programmeToTimetableViewEntries[programme]!;
-    //   debugPrint('timetableViewEntries: $selectedTimetableViewEntries');//todo delete
-    //   selectedTimetableViewEntries.sort();
-    //   debugPrint('sorted');//todo delete
-    //   for(TimetableViewEntry timetableViewEntry in selectedTimetableViewEntries) {
-    //     final String url = replaceSpaces('$programme-${timetableViewEntry.name}');
-    //     htmlProgrammes += '<a href="#$url"><span></span>${timetableViewEntry.name}</a>\n\n';
-    //   }
-    // }
 
     final List<String> academicNames = academicsEmailToName.values.toList();
     academicNames.sort();
