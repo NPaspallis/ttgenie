@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 
 import 'model/data_entry.dart';
@@ -48,7 +50,6 @@ class HtmlUtil {
       for(String programme in programmes) {
         htmlProgrammes += '<p><span>$programme</span></p>\n';
         List<TimetableViewEntry> selectedTimetableViewEntries = programmeToTimetableViewEntries[programme]!;
-        debugPrint('timetableViewEntries: $selectedTimetableViewEntries');//todo delete
         selectedTimetableViewEntries.sort();
         for(TimetableViewEntry timetableViewEntry in selectedTimetableViewEntries) {
           final String url = replaceSpaces('$programme-${timetableViewEntry.name}');
@@ -79,10 +80,30 @@ class HtmlUtil {
 
     final List<String> academicNames = academicsEmailToName.values.toList();
     academicNames.sort();
+    const int numOfAcademicsGroups = 4;
+    int numOfAcademicsPerGroup = (academicNames.length / numOfAcademicsGroups).ceil();
+    List<String> groupNames = [];
+    for(int i=0; i<numOfAcademicsGroups; i++) {
+      String firstLetter = i==0 ? 'A' : academicNames[i*numOfAcademicsPerGroup][0];
+      int lastIndex = min((i+1)*numOfAcademicsPerGroup-1, academicNames.length-1);
+      String lastLetter = i<numOfAcademicsGroups-1 ? academicNames[lastIndex][0] : 'Z';
+      groupNames.add('$firstLetter to $lastLetter');
+    }
+
     String htmlAcademics = '';
-    for(String academicName in academicNames) {
-      final String url = replaceSpaces(academicName);
-      htmlAcademics += '<a href="#$url"><span></span>$academicName</a>\n\n';
+    for(int i=0; i < numOfAcademicsGroups; i++) {
+      htmlAcademics += '<div class="mega-col">\n';
+      htmlAcademics += '<div class="mega-col-title">${groupNames[i]}</div>\n\n';
+
+      final int firstIndex = i*numOfAcademicsPerGroup;
+      final int lastIndex = i<numOfAcademicsGroups-1 ? (i+1)*numOfAcademicsPerGroup : academicNames.length;
+      for(int j=firstIndex; j<lastIndex; j++) {
+        final String url = replaceSpaces('#academic-${academicNames[j]}');
+        htmlAcademics += '<a href="#$url"><span></span>${academicNames[j]}</a>\n';
+        htmlAcademics += '\n';
+      }
+
+      htmlAcademics += '</div>\n\n';
     }
 
     labs.sort();
@@ -96,37 +117,6 @@ class HtmlUtil {
         .replaceAll('%academics-links%', htmlAcademics)
         .replaceAll('%labs-links%', htmlLabs);
   }
-
-  static String navbarTemplate1 = '''
-  <!-- NAVBAR -->
-  <nav>
-    <div class="nav-brand">Dept. of Computing &amp; Mathematics</div>
-    <ul class="nav-menus">
-
-      <li>
-        <a href="#programmes">Programmes</a>
-        <div class="dropdown">
-          %programmes-links%
-        </div>
-      </li>
-
-      <li>
-        <a href="#academics">Academics</a>
-        <div class="dropdown">
-          %academics-links%
-        </div>
-      </li>
-
-      <li>
-        <a href="#labs">Labs</a>
-        <div class="dropdown">
-          %labs-links%
-        </div>
-      </li>
-
-    </ul>
-  </nav>
-''';
 
   static String navbarTemplate = '''
   <!-- NAVBAR -->
@@ -145,10 +135,14 @@ class HtmlUtil {
         </div>
       </li>
 
-      <li>
+      <li class="has-mega">
         <a href="#academics">Academics</a>
-        <div class="dropdown">
+        <div class="mega-menu">
+          <div class="mega-inner">
+
           %academics-links%
+
+          </div>
         </div>
       </li>
 
