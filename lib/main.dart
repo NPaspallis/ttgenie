@@ -174,7 +174,9 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
           // String html = AcademicUtil.htmlPage.replaceAll('%html%', htmlAcademics);
           // String html = AcademicUtil.htmlPage.replaceAll('%html%', htmlProgrammes);
           String htmlNavbar = HtmlUtil.createNavbar(timetableViewEntries, academicsEmailToName, labs.toList());
-          String html = HtmlTemplates.htmlPageModern.replaceAll('%navbar%', htmlNavbar);
+          String html = HtmlTemplates.htmlPageModern
+              .replaceAll('%navbar%', htmlNavbar)
+              .replaceAll('%academics-divs%', htmlAcademics);
           setState(() => _htmlTimetable = html);
 
         } else {

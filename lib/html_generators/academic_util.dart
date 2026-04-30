@@ -20,7 +20,7 @@ class AcademicUtil {
     
     final Map<String, double> deliveryTypeToTotalHours = {};
 
-    String html = "";
+    String html = "<div>";
 
     Set<String> moduleCodes = SplayTreeSet<String>();
     final List<TimetableEntry> fullYearTimetableEntries = [];
@@ -108,20 +108,55 @@ class AcademicUtil {
       }
     }
 
-    String targets = "";
-    if (targetHours > 0) {
-      targets += "<p>Target hours: ${targetHours.toStringAsFixed(1)}</p>";
-    }
+    // String targets = "";
+    // if (targetHours > 0) {
+    //   targets += "<p>Target hours: ${targetHours.toStringAsFixed(1)}</p>";
+    // }
 
-    html += "<hr>";
+    html += "</div>";
     
-    return academicTemplate
-        .replaceFirst("%academic_name_with_no_spaces%", academic.name.replaceAll(' ', '_'))
-        .replaceFirst("%academic_name%", academic.name)
-        .replaceAll("%academic_email%", academic.email)
-        .replaceFirst("%targets%", targets)
-        .replaceFirst("%academic_timetables%", html);
+    // return academicTemplate
+    //     .replaceFirst("%academic_name_with_no_spaces%", academic.name.replaceAll(' ', '_'))
+    //     .replaceFirst("%academic_name%", academic.name)
+    //     .replaceAll("%academic_email%", academic.email)
+    //     .replaceFirst("%targets%", targets)
+    //     .replaceFirst("%academic_timetables%", html);
+
+    return academicDivTemplate
+        .replaceAll('%academic-id%', academic.name)
+        .replaceAll('%academic-initial', getInitials(academic.name))
+        .replaceAll('%academic-type%', 'tbc')//todo
+        .replaceAll('%academic-name%', academic.name)
+        .replaceAll('%timetables-divs%', html);
   }
+
+  static String getInitials(String name) {
+    if(name.length < 2) return '??';
+    final int indexOfFirstSpace = name.indexOf(' ');
+    final String firstName = name.substring(0, indexOfFirstSpace);
+    final String lastName = name.substring(indexOfFirstSpace+1);
+    return firstName[0] + lastName[0];
+  }
+
+  // must replace:
+  // - %academic-id%
+  // - %academic-initials%
+  // - %academic-type% Faculty | Special Teaching Staff
+  // - %academic-name%
+  // - %timetables-divs%
+  static const String academicDivTemplate = r'''
+        <div class="card academic" id="%academic-id%">
+          <div class="card-avatar">%academic-initials%</div>
+          <span class="card-tag">%academic-type%</span>
+          <h3>%academic-name%</h3>
+          %timetables-divs%
+          <div class="card-meta">
+            <span class="badge">module-1</span>
+            <span class="badge">module-2</span>
+            <span class="badge">etc.</span>
+          </div>
+        </div>
+  ''';
 
   static const String academicTemplate = r"""
 <div class='page'>

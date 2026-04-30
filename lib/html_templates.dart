@@ -523,12 +523,13 @@ tr {
     <!-- ══ PROGRAMMES ══ -->
     <section id="programmes" class="section" style="scroll-margin-top: var(--nav-h)">
       <div class="section-header">
-        <span class="section-number">01</span>
         <h2 class="section-title">Programmes</h2>
       </div>
       <div class="section-divider"></div>
       <br/>
       <div class="cards">
+
+        %programmes-timetables%
 
         <div class="card" id="bsc-computing">
           <span class="card-tag">Undergraduate</span>
@@ -576,49 +577,7 @@ tr {
       <br/>
       <div class="cards">
 
-        <div class="card academic" id="lecturer-1">
-          <div class="card-avatar">L1</div>
-          <span class="card-tag">Faculty</span>
-          <h3>Lecturer 1</h3>
-          <p>Specialises in algorithms and complexity theory. Has published extensively in top-tier conferences and leads the department's theoretical computing research group.</p>
-          <div class="card-meta">
-            <span class="badge">Algorithms</span>
-            <span class="badge">Complexity</span>
-          </div>
-        </div>
-
-        <div class="card academic" id="lecturer-2">
-          <div class="card-avatar">L2</div>
-          <span class="card-tag">Faculty</span>
-          <h3>Lecturer 2</h3>
-          <p>Research interests include machine learning and neural networks. Leads a postgraduate seminar series and supervises multiple PhD students working on applied AI.</p>
-          <div class="card-meta">
-            <span class="badge">Machine Learning</span>
-            <span class="badge">AI</span>
-          </div>
-        </div>
-
-        <div class="card academic" id="lecturer-3">
-          <div class="card-avatar">L3</div>
-          <span class="card-tag">Faculty</span>
-          <h3>Lecturer 3</h3>
-          <p>Focuses on network security and cryptography. Has collaborated with industry partners on secure communication protocols and advises on cybersecurity policy.</p>
-          <div class="card-meta">
-            <span class="badge">Cybersecurity</span>
-            <span class="badge">Cryptography</span>
-          </div>
-        </div>
-
-        <div class="card academic" id="lecturer-4">
-          <div class="card-avatar">L4</div>
-          <span class="card-tag">Faculty</span>
-          <h3>Lecturer 4</h3>
-          <p>Expert in mathematical modelling and numerical analysis. Teaches core mathematics modules and conducts research in computational methods for differential equations.</p>
-          <div class="card-meta">
-            <span class="badge">Mathematics</span>
-            <span class="badge">Modelling</span>
-          </div>
-        </div>
+        %academics-divs%
 
       </div>
     </section>
