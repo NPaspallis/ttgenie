@@ -477,77 +477,19 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
               label: const Text('Download HTML file'),
             ),
           ],
-          bottom: const TabBar(
-            isScrollable: true,
-            tabs: [
-              Tab(icon: Icon(Icons.terminal), text: 'Logs'),
-              Tab(icon: Icon(Icons.report_problem), text: 'Issues'),
-              Tab(icon: Icon(Icons.calendar_today), text: 'Timetables'),
-            ],
-          ),
         ),
-        body: TabBarView(
-          children: [
-            // Tab 1: Logs
-            Container(
-              color: Colors.black,
-              child: Theme(
-                data: ThemeData.dark().copyWith(
-                  scrollbarTheme: const ScrollbarThemeData(
-                    thumbColor: WidgetStatePropertyAll(Colors.white60),
-                    radius: Radius.circular(10),
-                  ),
-                ),
-                child: Scrollbar(
-                  controller: _scrollController,
-                  thumbVisibility: true,
-                  thickness: 8.0,
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.all(8.0),
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    itemCount: _logs.length,
-                    itemBuilder: (context, index) {
-                      return Text(
-                        _logs[index],
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'monospace',
-                          fontSize: 12,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ),
-            // Tab 2: Issues Placeholder
-            const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.report_problem, size: 64, color: Colors.orange),
-                  SizedBox(height: 16),
-                  Text('Issues', style: TextStyle(fontSize: 24)),
-                  Text('Any issues found in the XLSX will appear here.'),
-                ],
-              ),
-            ),
-            // Tab 3: Timetables Placeholder
-            Center(
-              child: _htmlTimetable.isEmpty ?
-                const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.calendar_today, size: 64, color: Colors.blue),
-                    SizedBox(height: 16),
-                    Text('Timetables', style: TextStyle(fontSize: 24)),
-                    Text('The processed timetables will be displayed here.'),
-                  ],
-                ) :
-                TimetableView(html: _htmlTimetable),
-            ),
-          ],
+        body: Center(
+          child: _htmlTimetable.isEmpty ?
+          const Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.calendar_today, size: 64, color: Colors.blue),
+              SizedBox(height: 16),
+              Text('Timetables', style: TextStyle(fontSize: 24)),
+              Text('The processed timetables will be displayed here.'),
+            ],
+          ) :
+          TimetableView(html: _htmlTimetable),
         )
       ),
     );
