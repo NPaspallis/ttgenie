@@ -466,7 +466,15 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
                 _pickAndProcessFile();
               },
               icon: const Icon(Icons.upload),
-              label: const Text('Pick XLSX file'),
+              label: const Text('Upload XLSX file'),
+            ),
+            TextButton.icon(
+              onPressed: _htmlTimetable.isEmpty ? null : () {
+                _addLog('Downloading file ...');
+                _downloadHtml();
+              },
+              icon: const Icon(Icons.download),
+              label: const Text('Download HTML file'),
             ),
           ],
           bottom: const TabBar(
@@ -540,14 +548,7 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
                 TimetableView(html: _htmlTimetable),
             ),
           ],
-        ),
-        floatingActionButton: _htmlTimetable.isEmpty
-            ? null
-            : FloatingActionButton(
-                onPressed: _downloadHtml,
-                tooltip: 'Download HTML Timetable',
-                child: const Icon(Icons.download),
-              ),
+        )
       ),
     );
   }
