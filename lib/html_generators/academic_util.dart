@@ -82,17 +82,19 @@ class AcademicUtil {
     
     html += "<li><b>Total hours per week: ${(totalHoursForAcademicYear / 30.0).toStringAsFixed(2)} (${totalHoursForAcademicYear.toStringAsFixed(0)} hours over the academic year)</b></li>\n";
     html += "<br>\n";
-    
-    if (academic.isFaculty) {
-      double academicTarget = targetHours; 
-      
-      if ((totalHoursForAcademicYear / 30.0).toStringAsFixed(2) == academicTarget.toStringAsFixed(2)) {
-        html += "<li style='color: green'>Target hours: ${academicTarget.toStringAsFixed(2)} OK!</li>\n";
-      } else {
-        final double difference = (totalHoursForAcademicYear / 30.0) - academicTarget;
-        html += "<li style='color: red'>Target hours: ${academicTarget.toStringAsFixed(2)} (difference: ${difference > 0 ? "+" : ""}${difference.toStringAsFixed(2)})</li>\n";
-      }
-    }
+
+    // ignore workload data for now
+    // if (academic.isFaculty) {
+    //   double academicTarget = targetHours;
+    //
+    //   if ((totalHoursForAcademicYear / 30.0).toStringAsFixed(2) == academicTarget.toStringAsFixed(2)) {
+    //     html += "<li style='color: green'>Target hours: ${academicTarget.toStringAsFixed(2)} OK!</li>\n";
+    //   } else {
+    //     final double difference = (totalHoursForAcademicYear / 30.0) - academicTarget;
+    //     html += "<li style='color: red'>Target hours: ${academicTarget.toStringAsFixed(2)} (difference: ${difference > 0 ? "+" : ""}${difference.toStringAsFixed(2)})</li>\n";
+    //   }
+    // }
+
     html += "</ul>\n";
 
     html += "<p><b>Timetables</b> (Full Year: ${fullYearTimetableEntries.isNotEmpty ? "Yes" : "No"}, Sem 1: ${sem1 ? "Yes" : "No"}, Sem 2: ${sem2 ? "Yes" : "No"}, Sem 3: ${sem3 ? "Yes" : "No"})</p>";
