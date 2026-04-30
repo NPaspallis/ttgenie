@@ -13,12 +13,11 @@ class TimetableUtil {
   static String getTimetableFromTimetableEntriesAsHtml(
       final String title, List<TimetableEntry> selectedTimetableEntries) {
 
-    String html = '<div><h3>$title</h3';
-
     if (selectedTimetableEntries.isEmpty) {
-      html += "<p style='font-style: italic;'>No Entries</p>";
-      return html;
+      return "<div><h3>$title</h3><p style='font-style: italic;'>No Entries</p></div>";
     }
+
+    String html = '<div><h3>$title</h3>';
 
     // check if any of the entries starts or ends at a :30 point
     bool halfHourSteps = false;

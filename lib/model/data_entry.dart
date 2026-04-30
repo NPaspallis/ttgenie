@@ -16,10 +16,11 @@ class TimetableEntry {
   final DateTime endDate;
   final String deliveryTypeName;
   final String roomCode;
-  final String lecturerEmail;
+  final String lecturerName;
   final int expNoStudents;
   final String roomType;
   final String groupName;
+  final String lecturerId;
   final String notes;
 
   TimetableEntry({
@@ -35,17 +36,13 @@ class TimetableEntry {
     required this.endDate,
     required this.deliveryTypeName,
     required this.roomCode,
-    required this.lecturerEmail,
+    required this.lecturerName,
     required this.expNoStudents,
     required this.roomType,
     required this.groupName,
+    required this.lecturerId,
     required this.notes,
   });
-
-  String get lecturerEmailId {
-    final int indexOfAt = lecturerEmail.indexOf('@');
-    return indexOfAt == -1 ? "unknown" : lecturerEmail.substring(0, indexOfAt);
-  }
 
   // String get startTimeAsString => '${startTime.hour < 10 ? '0' : ''}${startTime.hour}:${startTime.minute < 10 ? '0' : ''}${startTime.minute}';
   // String get endTimeAsString => '${endTime.hour < 10 ? '0' : ''}${endTime.hour}:${endTime.minute < 10 ? '0' : ''}${endTime.minute}';
@@ -66,7 +63,7 @@ class TimetableEntry {
     return "<p>"
         "<h3>$moduleCode - $moduleName</h3>"
         "<span style='float:left; width:${spanWidth}px;'>Room:</span> ${roomCode.isEmpty ? "?" : roomCode}<br/>"
-        "<span style='float:left; width:${spanWidth}px;'>Lecturer ID:</span> $lecturerEmail<br/>"
+        "<span style='float:left; width:${spanWidth}px;'>Lecturer ID:</span> $lecturerId<br/>"
         "<span style='float:left; width:${spanWidth}px;'>Session:</span> $startTimeStr - $endTimeStr<br/>"
         "<span style='float:left; width:${spanWidth}px;'>Delivery:</span> $deliveryTypeName<br/>"
         "${notes.trim().isEmpty ? "" : "<span style='float:left; width:${spanWidth}px;'>Notes:</span> $notes<br/>"}"
@@ -92,10 +89,11 @@ class TimetableEntry {
         "endDate=$endDateAsString, "
         "deliveryTypeName='$deliveryTypeName', "
         "roomCode='$roomCode', "
-        "lecturerEmail='$lecturerEmail', "
+        "lecturerId='$lecturerName', "
         "expNoStudents=$expNoStudents, "
         "roomType=$roomType, "
         "groupName='$groupName', "
+        "lecturerId='$lecturerId', "
         "notes='$notes'"
         "}";
   }

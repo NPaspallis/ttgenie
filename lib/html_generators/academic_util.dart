@@ -13,11 +13,11 @@ class AcademicUtil {
       List<TimetableEntry>? timetableEntries,
       final double targetHours) {
 
-    return htmlPage.replaceAll("%html%", createAcademicTimetablesAsDiv(academic, timetableEntries, targetHours));
+    return htmlPage.replaceAll("%html%", createAcademicTimetablesAsDiv(academic.name, timetableEntries, targetHours));
   }
 
   static String createAcademicTimetablesAsDiv(
-      final Academic academic,
+      final String academicName,
       List<TimetableEntry>? timetableEntries,
       final double targetHours) {
     
@@ -127,10 +127,10 @@ class AcademicUtil {
     htmlModuleCodes += '</div>\n\n';
 
     return academicDivTemplate
-        .replaceAll('%academic-id%', HtmlUtil.replaceSpaces(academic.name))
-        .replaceAll('%academic-initials%', getInitials(academic.name))
+        .replaceAll('%academic-id%', HtmlUtil.replaceSpaces(academicName))
+        .replaceAll('%academic-initials%', getInitials(academicName))
         .replaceAll('%academic-type%', 'tbc')//todo
-        .replaceAll('%academic-name%', academic.name)
+        .replaceAll('%academic-name%', academicName)
         .replaceAll('%timetables-divs%', html)
         .replaceAll('%module-divs%', htmlModuleCodes);
   }
@@ -159,14 +159,14 @@ class AcademicUtil {
         </div>
   ''';
 
-  static const String academicTemplate = r"""
+  static const String academicTemplate = r'''
 <div class='page'>
     <a name="academic_%academic_name_with_no_spaces%"></a>
     <h3>%academic_name% [<a href="mailto:%academic_email%@uclan.ac.uk">@%academic_email%</a>]</h3>
     <p><a href="#top">Back to top</a></p>
     %targets%
     %academic_timetables%
-</div>""";
+</div>''';
 
   static const String academicsListTemplate = r"""
 <h2>%academics_list_name%</h2>

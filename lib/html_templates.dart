@@ -571,8 +571,8 @@ tr {
       font-style: italic;
     }
 
-    /* ── Timetable Period Label (h3 inside table) ── */
-    .card.academic table {
+    /* ── Timetable table (shared: academic & programme cards) ── */
+    .card table {
       width: 100%;
       border-collapse: collapse;
       margin: 12px 0 20px;
@@ -582,8 +582,8 @@ tr {
       font-size: 0.8rem;
     }
 
-    /* The <h3> that sits before <tr> inside the table — render as a caption band */
-    .card.academic table h3 {
+    /* Period label h3 inside an academic table (e.g. "Full Year") */
+    .card table h3 {
       display: block;
       font-family: 'Playfair Display', serif;
       font-size: 0.78rem;
@@ -595,7 +595,21 @@ tr {
       padding: 7px 14px;
     }
 
-    /* Standalone h3 (outside table but inside card div) */
+    /* Programme card: the div>h3 title banner above the rows */
+    .card table div > h3:first-child {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: none;
+      color: #fff;
+      background: var(--navy);
+      padding: 10px 16px;
+      display: block;
+      border-bottom: 2px solid var(--gold);
+    }
+
+    /* Standalone h3 outside table but inside academic card div */
     .card.academic > div > h3 {
       font-family: 'Playfair Display', serif;
       font-size: 0.78rem;
@@ -610,7 +624,7 @@ tr {
     }
 
     /* Header row */
-    .card.academic table th {
+    .card table th {
       background: var(--navy);
       color: var(--gold-light);
       font-family: 'DM Sans', sans-serif;
@@ -624,14 +638,14 @@ tr {
       white-space: nowrap;
     }
 
-    .card.academic table th:first-child {
+    .card table th:first-child {
       text-align: left;
       min-width: 100px;
       color: rgba(232,201,122,0.6);
     }
 
     /* Body rows */
-    .card.academic table td {
+    .card table td {
       padding: 7px 10px;
       border: 1px solid #eee8dc;
       text-align: center;
@@ -643,7 +657,7 @@ tr {
     }
 
     /* Time column */
-    .card.academic table td:first-child {
+    .card table td:first-child {
       text-align: left;
       font-size: 0.74rem;
       color: var(--navy);
@@ -653,17 +667,17 @@ tr {
       padding-left: 12px;
       border-left: none;
     }
-    .card.academic table td:first-child i {
+    .card table td:first-child i {
       font-style: normal;
     }
 
     /* Alternating row tint */
-    .card.academic table tr:nth-child(even) td:first-child {
+    .card table tr:nth-child(even) td:first-child {
       background: #f3efe8 !important;
     }
 
     /* ── Scheduled session cell (was bgcolor=#f0f0f0) ── */
-    .card.academic table td[bgcolor='#f0f0f0'] {
+    .card table td[bgcolor='#f0f0f0'] {
       background: linear-gradient(135deg, #e8f0e8, #d4e8d4) !important;
       border: 1px solid #b8d4b8 !important;
       font-weight: 700;
@@ -674,12 +688,27 @@ tr {
     }
 
     /* ── Break / lunch cell (was bgcolor=#ffffc0) ── */
-    .card.academic table td[bgcolor='#ffffc0'] {
+    .card table td[bgcolor='#ffffc0'] {
       background: #fdf8ec !important;
       border-color: #ede6d0 !important;
     }
-    .card.academic table td[bgcolor='#ffffc0']:first-child {
+    .card table td[bgcolor='#ffffc0']:first-child {
       background: #f7f0d8 !important;
+    }
+
+    /* Programme cards that contain only a table — remove default card padding top */
+    .card:not(.academic):not(.lab) {
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .card:not(.academic):not(.lab) > table {
+      margin: 0;
+    }
+
+    /* The scroll wrapper so wide tables don't break layout */
+    .card:not(.academic):not(.lab) {
+      overflow-x: auto;
     }
 
     /* ── TOOLTIP ── */
@@ -782,46 +811,12 @@ tr {
 
         %programmes-divs%
 
-        <div class="card" id="bsc-computing">
-          <span class="card-tag">Undergraduate</span>
-          <h3>BSc Computing</h3>
-          <p>A rigorous programme covering software engineering, algorithms, data structures, networks, and artificial intelligence. Students graduate with strong analytical and practical skills ready for industry or further study.</p>
-          <div class="card-meta">
-            <span class="badge">3 Years</span>
-            <span class="badge">180 ECTS</span>
-            <span class="badge">Full-time</span>
-          </div>
-        </div>
-
-        <div class="card" id="bsc-mathematics">
-          <span class="card-tag">Undergraduate</span>
-          <h3>BSc Mathematics</h3>
-          <p>Covering pure and applied mathematics including calculus, linear algebra, probability, and mathematical modelling. Prepares students for careers in research, finance, data science, and engineering.</p>
-          <div class="card-meta">
-            <span class="badge">3 Years</span>
-            <span class="badge">180 ECTS</span>
-            <span class="badge">Full-time</span>
-          </div>
-        </div>
-
-        <div class="card" id="msc-computing">
-          <span class="card-tag">Postgraduate</span>
-          <h3>MSc Computing</h3>
-          <p>An advanced programme focusing on machine learning, distributed systems, cybersecurity, and research methods. Designed for graduates seeking to deepen their expertise or transition into research careers.</p>
-          <div class="card-meta">
-            <span class="badge">1.5 Years</span>
-            <span class="badge">90 ECTS</span>
-            <span class="badge">Full/Part-time</span>
-          </div>
-        </div>
-
       </div>
     </section>
 
     <!-- ══ ACADEMICS ══ -->
     <section id="academics" class="section" style="scroll-margin-top: var(--nav-h)">
       <div class="section-header">
-        <span class="section-number">02</span>
         <h2 class="section-title">Academics</h2>
       </div>
       <div class="section-divider"></div>
@@ -836,46 +831,13 @@ tr {
     <!-- ══ LABS ══ -->
     <section id="labs" class="section" style="scroll-margin-top: var(--nav-h)">
       <div class="section-header">
-        <span class="section-number">03</span>
-        <h2 class="section-title">Labs</h2>
+        <h2 class="section-title">Rooms &amp; Labs</h2>
       </div>
       <div class="section-divider"></div>
       <br/>
       <div class="cards">
 
-        <div class="card lab" id="lab-1">
-          <div class="lab-icon">🖥️</div>
-          <span class="card-tag">Research Lab</span>
-          <h3>Lab 1 — Computing Lab</h3>
-          <p>A state-of-the-art computing laboratory equipped with high-performance workstations, GPU clusters, and a dedicated development environment for software engineering and AI research projects.</p>
-          <div class="card-meta">
-            <span class="badge">40 Workstations</span>
-            <span class="badge">GPU Cluster</span>
-          </div>
-        </div>
-
-        <div class="card lab" id="lab-2">
-          <div class="lab-icon">🔐</div>
-          <span class="card-tag">Research Lab</span>
-          <h3>Lab 2 — Security Lab</h3>
-          <p>An isolated environment for cybersecurity research and practical exercises. Supports ethical hacking, penetration testing, and the development of secure systems and protocols.</p>
-          <div class="card-meta">
-            <span class="badge">Isolated Network</span>
-            <span class="badge">24/7 Access</span>
-          </div>
-        </div>
-
-        <div class="card lab" id="lab-3">
-          <div class="lab-icon">📐</div>
-          <span class="card-tag">Teaching Lab</span>
-          <h3>Lab 3 — Mathematics Lab</h3>
-          <p>A collaborative space supporting mathematical computing, statistical analysis, and modelling. Features specialised software including MATLAB, Mathematica, and R for applied research.</p>
-          <div class="card-meta">
-            <span class="badge">MATLAB</span>
-            <span class="badge">Mathematica</span>
-            <span class="badge">R</span>
-          </div>
-        </div>
+        %labs-divs%
 
       </div>
     </section>

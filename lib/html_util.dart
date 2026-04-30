@@ -22,11 +22,12 @@ class HtmlUtil {
   }
 
   static String getModuleAsHtml(TimetableEntry entry) {
+    String name = entry.groupName.isEmpty ? entry.moduleCode : '${entry.moduleCode} (${entry.groupName})';
     // Basic implementation - can be expanded as needed
-    return '<div class="tooltip">${entry.moduleCode}<span class="tooltiptext">${entry.toTooltipHTML()}</span></div>';
+    return '<div class="tooltip">$name<span class="tooltiptext">${entry.toTooltipHTML()}</span></div>';
   }
 
-  static String createNavbar(final List<TimetableViewEntry> timetableViewEntries, final Map<String, String> academicsEmailToName, final List<String> labs) {
+  static String createNavbar(final List<TimetableViewEntry> timetableViewEntries, final List<String> academicNames, final List<String> labs) {
 
     final Map<String, Set<String>> groupToProgrammes = {};
     final Map<String, List<TimetableViewEntry>> programmeToTimetableViewEntries = {};
@@ -59,8 +60,6 @@ class HtmlUtil {
       htmlProgrammes += '</div>\n\n';
     }
 
-    final List<String> academicNames = academicsEmailToName.values.toList();
-    academicNames.sort();
     const int numOfAcademicsGroups = 4;
     int numOfAcademicsPerGroup = (academicNames.length / numOfAcademicsGroups).ceil();
     List<String> groupNames = [];
