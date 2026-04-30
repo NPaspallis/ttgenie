@@ -1,4 +1,6 @@
 import 'dart:collection';
+import 'package:flutter/cupertino.dart';
+
 import '../html_util.dart';
 import '../model/academic.dart';
 import '../model/data_entry.dart';
@@ -76,7 +78,7 @@ class AcademicUtil {
         html += "<li><i>$deliveryType</i>: $totalHours per week (${(totalHours * 10).toStringAsFixed(0)} in total)</li>\n";
         totalHoursForAcademicYear += totalHours * 10;
       } else {
-        print("Invalid deliveryType: $deliveryType");
+        debugPrint('Invalid deliveryType: $deliveryType');
       }
     }
     
@@ -142,7 +144,7 @@ class AcademicUtil {
   }
 
   // must replace:
-  // - %academic-id%
+  // - %academic-id% (no spaces)
   // - %academic-initials%
   // - %academic-type% Faculty | Special Teaching Staff
   // - %academic-name%

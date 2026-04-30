@@ -780,7 +780,7 @@ tr {
       <br/>
       <div class="cards">
 
-        %programmes-timetables%
+        %programmes-divs%
 
         <div class="card" id="bsc-computing">
           <span class="card-tag">Undergraduate</span>

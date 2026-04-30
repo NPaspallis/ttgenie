@@ -4,6 +4,7 @@ import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:ttgenie/html_generators/programmes_util.dart';
 import 'package:ttgenie/html_templates.dart';
 import 'package:ttgenie/html_util.dart';
 import 'package:universal_html/html.dart' as html;
@@ -157,7 +158,7 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
                 selectedTimetableEntries.addAll(moduleCodeToTimetableEntryMap[moduleCode] ?? []);
               }
 
-              htmlProgrammes += '${TimetableUtil.getTimetableFromTimetableEntriesAsHtml(timetableViewEntry.name, selectedTimetableEntries)}\n\n';
+              htmlProgrammes += '${ProgrammesUtil.getProgrammeTimetableAsDiv(timetableViewEntry, selectedTimetableEntries)}\n\n';
             }
           }
 
@@ -170,12 +171,10 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
             htmlAcademics += '${AcademicUtil.createAcademicTimetablesAsDiv(academic, selectedTimetableEntries, 0)}\n\n';
           }
 
-          // todo add academics
-          // String html = AcademicUtil.htmlPage.replaceAll('%html%', htmlAcademics);
-          // String html = AcademicUtil.htmlPage.replaceAll('%html%', htmlProgrammes);
           String htmlNavbar = HtmlUtil.createNavbar(timetableViewEntries, academicsEmailToName, labs.toList());
           String html = HtmlTemplates.htmlPageModern
               .replaceAll('%navbar%', htmlNavbar)
+              .replaceAll('%programmes-divs%', htmlProgrammes)
               .replaceAll('%academics-divs%', htmlAcademics);
           setState(() => _htmlTimetable = html);
 

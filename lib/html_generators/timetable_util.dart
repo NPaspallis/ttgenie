@@ -12,8 +12,8 @@ class TimetableUtil {
 
   static String getTimetableFromTimetableEntriesAsHtml(
       final String title, List<TimetableEntry> selectedTimetableEntries) {
-    
-    String html = "<h3>$title</h3>";
+
+    String html = '<div><h3>$title</h3';
 
     if (selectedTimetableEntries.isEmpty) {
       html += "<p style='font-style: italic;'>No Entries</p>";
@@ -137,15 +137,6 @@ class TimetableUtil {
       html += rowHtml;
     }
 
-    return "<table>$html</table>";
-  }
-
-  static String getTimetableFromModulesTimetableViewEntryAsHtml(
-      final String title, TimetableViewEntry selectedTimetableViewEntry) {
-    final List<String> selectedModuleCodes = selectedTimetableViewEntry.values;
-    List<TimetableEntry> selectedTimetableEntries = [];
-    //todo
-
-    return getTimetableFromTimetableEntriesAsHtml(title, selectedTimetableEntries);
+    return '<table>$html</table>';
   }
 }
