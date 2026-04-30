@@ -1,4 +1,5 @@
 import 'dart:collection';
+import '../html_util.dart';
 import '../model/academic.dart';
 import '../model/data_entry.dart';
 import 'timetable_util.dart';
@@ -114,20 +115,20 @@ class AcademicUtil {
     // }
 
     html += "</div>";
-    
-    // return academicTemplate
-    //     .replaceFirst("%academic_name_with_no_spaces%", academic.name.replaceAll(' ', '_'))
-    //     .replaceFirst("%academic_name%", academic.name)
-    //     .replaceAll("%academic_email%", academic.email)
-    //     .replaceFirst("%targets%", targets)
-    //     .replaceFirst("%academic_timetables%", html);
+
+    String htmlModuleCodes = '<div class="card-meta">\n';
+    for(final String moduleCode in moduleCodes) {
+      htmlModuleCodes += '  <span class="badge">$moduleCode</span>\n';
+    }
+    htmlModuleCodes += '</div>\n\n';
 
     return academicDivTemplate
-        .replaceAll('%academic-id%', academic.name)
-        .replaceAll('%academic-initial', getInitials(academic.name))
+        .replaceAll('%academic-id%', HtmlUtil.replaceSpaces(academic.name))
+        .replaceAll('%academic-initials%', getInitials(academic.name))
         .replaceAll('%academic-type%', 'tbc')//todo
         .replaceAll('%academic-name%', academic.name)
-        .replaceAll('%timetables-divs%', html);
+        .replaceAll('%timetables-divs%', html)
+        .replaceAll('%module-divs%', htmlModuleCodes);
   }
 
   static String getInitials(String name) {
@@ -145,16 +146,12 @@ class AcademicUtil {
   // - %academic-name%
   // - %timetables-divs%
   static const String academicDivTemplate = r'''
-        <div class="card academic" id="%academic-id%">
+        <div class="card academic" id="#academic-%academic-id%">
           <div class="card-avatar">%academic-initials%</div>
           <span class="card-tag">%academic-type%</span>
           <h3>%academic-name%</h3>
           %timetables-divs%
-          <div class="card-meta">
-            <span class="badge">module-1</span>
-            <span class="badge">module-2</span>
-            <span class="badge">etc.</span>
-          </div>
+          %module-divs%
         </div>
   ''';
 

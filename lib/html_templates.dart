@@ -506,6 +506,257 @@ tr {
       margin: 20px 0 0;
       opacity: 0.3;
     }
+
+    /* ══════════════════════════════════════════
+       ACADEMIC CARD — INNER CONTENT OVERHAUL
+    ══════════════════════════════════════════ */
+
+    /* Workload section */
+    .card.academic > div > p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .card.academic > div > p:first-child {
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .card.academic > div > ul {
+      list-style: none;
+      background: var(--cream);
+      border-left: 3px solid var(--gold);
+      border-radius: 0 6px 6px 0;
+      padding: 10px 16px;
+      margin: 8px 0 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .card.academic > div > ul li {
+      font-size: 0.8rem;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .card.academic > div > ul li b {
+      color: var(--navy);
+    }
+
+    .card.academic > div > ul li[style*="color: red"] {
+      color: #c0392b !important;
+      font-weight: 600;
+    }
+
+    /* Timetable heading (the bold "Timetables (…)" paragraph) */
+    .card.academic > div > p > b {
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--navy);
+      font-weight: 700;
+    }
+
+    /* "No Entries" italic */
+    .card.academic > div > p[style*="font-style: italic"],
+    .card.academic > div > p i {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* ── Timetable Period Label (h3 inside table) ── */
+    .card.academic table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 20px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 6px rgba(13,27,42,0.07);
+      font-size: 0.8rem;
+    }
+
+    /* The <h3> that sits before <tr> inside the table — render as a caption band */
+    .card.academic table h3 {
+      display: block;
+      font-family: 'Playfair Display', serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: var(--navy);
+      padding: 7px 14px;
+    }
+
+    /* Standalone h3 (outside table but inside card div) */
+    .card.academic > div > h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: var(--cream);
+      padding: 6px 14px;
+      border-radius: 4px;
+      margin: 10px 0 4px;
+    }
+
+    /* Header row */
+    .card.academic table th {
+      background: var(--navy);
+      color: var(--gold-light);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 9px 12px;
+      text-align: center;
+      border: none;
+      white-space: nowrap;
+    }
+
+    .card.academic table th:first-child {
+      text-align: left;
+      min-width: 100px;
+      color: rgba(232,201,122,0.6);
+    }
+
+    /* Body rows */
+    .card.academic table td {
+      padding: 7px 10px;
+      border: 1px solid #eee8dc;
+      text-align: center;
+      vertical-align: middle;
+      font-size: 0.78rem;
+      color: var(--muted);
+      background: #fff;
+      transition: background 0.15s;
+    }
+
+    /* Time column */
+    .card.academic table td:first-child {
+      text-align: left;
+      font-size: 0.74rem;
+      color: var(--navy);
+      font-weight: 500;
+      background: #faf7f2 !important;
+      white-space: nowrap;
+      padding-left: 12px;
+      border-left: none;
+    }
+    .card.academic table td:first-child i {
+      font-style: normal;
+    }
+
+    /* Alternating row tint */
+    .card.academic table tr:nth-child(even) td:first-child {
+      background: #f3efe8 !important;
+    }
+
+    /* ── Scheduled session cell (was bgcolor=#f0f0f0) ── */
+    .card.academic table td[bgcolor='#f0f0f0'] {
+      background: linear-gradient(135deg, #e8f0e8, #d4e8d4) !important;
+      border: 1px solid #b8d4b8 !important;
+      font-weight: 700;
+      color: #2d5a2d;
+      font-size: 0.76rem;
+      letter-spacing: 0.03em;
+      cursor: default;
+    }
+
+    /* ── Break / lunch cell (was bgcolor=#ffffc0) ── */
+    .card.academic table td[bgcolor='#ffffc0'] {
+      background: #fdf8ec !important;
+      border-color: #ede6d0 !important;
+    }
+    .card.academic table td[bgcolor='#ffffc0']:first-child {
+      background: #f7f0d8 !important;
+    }
+
+    /* ── TOOLTIP ── */
+    .tooltip {
+      position: relative;
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .tooltiptext {
+      visibility: hidden;
+      opacity: 0;
+      background: var(--navy);
+      color: #e0e8f4;
+      border-radius: 8px;
+      padding: 14px 16px;
+      position: absolute;
+      z-index: 200;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 240px;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.22);
+      border: 1px solid rgba(201,168,76,0.25);
+      transition: opacity 0.18s, visibility 0.18s;
+      text-align: left;
+      pointer-events: none;
+    }
+
+    .tooltiptext::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: var(--navy);
+    }
+
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .tooltiptext h3 {
+      font-family: 'Playfair Display', serif !important;
+      font-size: 0.82rem !important;
+      font-weight: 700 !important;
+      color: var(--gold) !important;
+      background: none !important;
+      padding: 0 0 8px !important;
+      margin: 0 0 8px !important;
+      border-bottom: 1px solid rgba(201,168,76,0.2);
+      letter-spacing: 0 !important;
+      text-transform: none !important;
+      display: block !important;
+    }
+
+    .tooltiptext span[style] {
+      float: none !important;
+      width: auto !important;
+      display: inline-block;
+      font-size: 0.72rem;
+      color: var(--gold-light);
+      font-weight: 600;
+      min-width: 80px;
+    }
+
+    .tooltiptext br { display: block; margin-bottom: 4px; }
+
+    .tooltiptext p {
+      font-size: 0.78rem !important;
+      color: #b8c8e0 !important;
+      line-height: 1.8 !important;
+      margin: 0 !important;
+    }
   </style>
 </head>
 <body>
