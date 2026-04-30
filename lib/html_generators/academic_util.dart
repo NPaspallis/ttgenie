@@ -23,8 +23,6 @@ class AcademicUtil {
     
     final Map<String, double> deliveryTypeToTotalHours = {};
 
-    String html = "<div>";
-
     Set<String> moduleCodes = SplayTreeSet<String>();
     final List<TimetableEntry> fullYearTimetableEntries = [];
     final List<TimetableEntry> sem1TimetableEntries = [];
@@ -59,6 +57,7 @@ class AcademicUtil {
       deliveryTypeToTotalHours[timetableEntry.deliveryTypeName] = currentHours;
     }
 
+    String html = "<div>";
     html += "<p>Modules: $moduleCodes</p>\n";
     
     final List<String> sortedDeliveryTypes = deliveryTypeToTotalHours.keys.toList()..sort();
@@ -83,8 +82,9 @@ class AcademicUtil {
     }
     
     html += "<li><b>Total hours per week: ${(totalHoursForAcademicYear / 30.0).toStringAsFixed(2)} (${totalHoursForAcademicYear.toStringAsFixed(0)} hours over the academic year)</b></li>\n";
-    html += "<br>\n";
 
+    // html += "<br>\n";
+    //
     // ignore workload data for now
     // if (academic.isFaculty) {
     //   double academicTarget = targetHours;

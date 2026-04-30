@@ -89,7 +89,7 @@ class HtmlUtil {
     labs.sort();
     String htmlLabs = '';
     for(String lab in labs) {
-      htmlLabs += '<a href="#$lab"><span></span>$lab</a>\n\n';
+      htmlLabs += '<a href="#room_$lab"><span></span>$lab</a>\n\n';
     }
 
     return navbarTemplate
