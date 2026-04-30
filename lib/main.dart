@@ -480,13 +480,15 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
         ),
         body: Center(
           child: _htmlTimetable.isEmpty ?
-          const Column(
+          Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.calendar_today, size: 64, color: Colors.blue),
-              SizedBox(height: 16),
-              Text('Timetables', style: TextStyle(fontSize: 24)),
-              Text('The processed timetables will be displayed here.'),
+              _isProcessing ?
+                CircularProgressIndicator() :
+                Icon(Icons.calendar_today, size: 64, color: Colors.blue),
+              const SizedBox(height: 16),
+              Text(_isProcessing ? 'Loading ...' : 'Timetables', style: TextStyle(fontSize: 24)),
+              Text(_isProcessing ? 'Processing could take up to 30 seconds' : 'The HTML timetables will be displayed here.'),
             ],
           ) :
           TimetableView(html: _htmlTimetable),
