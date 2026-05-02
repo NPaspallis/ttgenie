@@ -480,6 +480,30 @@ tr {
       padding: 3px 9px;
     }
 
+    .module {
+      font-size: 0.72rem;
+      background: #4a5568;
+      color: #f0f4f8;
+      border-radius: 4px;
+      padding: 3px 9px;
+    }
+
+    .error {
+      font-size: 0.72rem;
+      background: #f00000;
+      color: #f0f0f0;
+      border-radius: 4px;
+      padding: 3px 9px;
+    }
+
+    .warning {
+      font-size: 0.72rem;
+      background: #f0f000;
+      color: #040404;
+      border-radius: 4px;
+      padding: 3px 9px;
+    }
+
     /* Academics specific */
     .card.academic .card-avatar {
       width: 44px; height: 44px;
@@ -786,6 +810,19 @@ tr {
       line-height: 1.8 !important;
       margin: 0 !important;
     }
+
+    .check-icon {
+      color: #4a8c4a;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .cross-icon {
+      color: #c0392b;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
   </style>
 </head>
 <body>

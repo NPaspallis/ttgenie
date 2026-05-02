@@ -20,6 +20,7 @@ class ProgrammesUtil {
     bool sem1 = false, sem2 = false, sem3 = false;
 
     for (final timetableEntry in timetableEntries) {
+      moduleCodes.add(timetableEntry.moduleCode);
       if (timetableEntry.deliveryTypeName == "Full Year") {
         fullYearTimetableEntries.add(timetableEntry);
         sem1TimetableEntries.add(timetableEntry);
@@ -36,10 +37,17 @@ class ProgrammesUtil {
       }
     }
 
-    String html = "<div>";
-    html += "<p>Modules: $moduleCodes</p>\n";
+    String htmlModules = '';
+    for(String moduleCode in moduleCodes) {
+      htmlModules += '<span class="module">$moduleCode</span>\n';
+    }
 
-    html += "<p><b>Timetables</b> (Full Year: ${fullYearTimetableEntries.isNotEmpty ? "Yes" : "No"}, Sem 1: ${sem1 ? "Yes" : "No"}, Sem 2: ${sem2 ? "Yes" : "No"}, Sem 3: ${sem3 ? "Yes" : "No"})</p>";
+    String htmlModes = '';
+    htmlModes += fullYearTimetableEntries.isNotEmpty ? '<span class="badge">Full Year <span class="check-icon">✓</span></span>\n' : '';
+    htmlModes += sem1 ? '<span class="badge">Sem 1</b> <span class="check-icon">✓</span></span>\n' : '';
+    htmlModes += sem2 ? '<span class="badge">Sem 2</b> <span class="check-icon">✓</span></span>\n' : '';
+
+    String html = '<div>';
 
     if (!sem1 && !sem2) {
       html += TimetableUtil.getTimetableFromTimetableEntriesAsHtml("Full Year", timetableEntries);
@@ -55,8 +63,11 @@ class ProgrammesUtil {
 
     return programmeDivTemplate
         .replaceAll('%programme_id%', HtmlUtil.replaceSpaces('${timetableViewEntry.programme}-${timetableViewEntry.name}'))
+        .replaceAll('%programme_name%', programmeName)
         .replaceAll('%programme_group%', timetableViewEntry.group)
         .replaceAll('%programme_type%', timetableViewEntry.distanceLearning ? 'distance learning' : 'conventional delivery')
+        .replaceAll('%html_modules%', htmlModules)
+        .replaceAll('%html_modes%', htmlModes)
         .replaceAll('%timetables-div%', html);
   }
 
@@ -68,11 +79,23 @@ class ProgrammesUtil {
   // - %timetables-div%
   static const String programmeDivTemplate = r'''
         <div class="card academic" id="%programme_id%">
-          <span class="card-tag">%programme_group%</span>
-          %timetables-div%
+          <h2>%programme_name%</h2>
           <div class="card-meta">
-            <span class="badge">%programme_type%</span>
+            <span class="card-tag">%programme_group%</span>
+            <span class="card-tag">%programme_type%</span>
           </div>
+          <div class="card-meta">
+            %html_modules%
+          </div>
+          <div class="card-meta">
+            %html_modes%
+          </div>
+          <div class="card-meta">
+            <span class="error"><div class="tooltip">Conflict<span class="tooltiptext">Error 1</span></div></span>
+            <span class="warning">Warning</span>
+          </div>
+          <br/>
+          %timetables-div%
         </div>
   ''';
 }

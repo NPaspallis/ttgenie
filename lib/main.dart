@@ -12,7 +12,6 @@ import 'package:ttgenie/html_util.dart';
 import 'package:universal_html/html.dart' as html;
 
 import 'html_generators/academic_util.dart';
-import 'html_generators/timetable_util.dart';
 import 'model/data_entry.dart';
 import 'model/academic.dart';
 import 'model/module.dart';
@@ -44,16 +43,6 @@ class ExcelProcessor extends StatefulWidget {
 }
 
 class _ExcelProcessorState extends State<ExcelProcessor> {
-  // static const Map<String,String> labs = {//todo delete
-  //   "CY014": "Computer Lab CY014 (Capacity 32)",
-  //   "CY114": "Computer Lab CY114 (Capacity 32)",
-  //   "CY111": "Computer Lab CY111 (Capacity 20)",
-  //   "CY112": "Computer Lab CY112 (Capacity 18)",
-  //   "CYCSL": "CISCO Lab CYCSL (Capacity 20)",
-  //   "CY020": "Electronics Lab",
-  //   "CY021": "Engineering Lab"
-  // };
-
 
   final List<String> _logs = [];
   final ScrollController _scrollController = ScrollController();
@@ -64,10 +53,8 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
   static final Map<String, List<TimetableEntry>> labIdToTimetableEntryMap = {};
   static final List<TimetableEntry> timetableEntries = [];
   static final Set<Module> allModules = {};
-  static final Map<String, Module> allModuleCodeToModules = {};
   static final Map<String, List<StructureRow>> programmeToStructureRowsMap = {};
   static final Map<Module, List<String>> moduleToProgrammesMap = {};
-  static final Map<String, Academic> emailToAcademic = {};
   static final List<TimetableViewEntry> timetableViewEntries = [];
   static final List<String> allProgrammes = [];
   static final Map<String, List<TimetableViewEntry>> programmeToTimetableViewEntries = {};
@@ -129,7 +116,7 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
           _addLog('Sheets number: ${excel.tables.keys.length}');
           _addLog('Sheets titles: ${excel.tables.keys.join(', ')}');
 
-          // 3. Read data in data structures
+          // 3. Read 'data' in data structures
           var sheetData = excel.tables['data'];
           if (sheetData != null) {
             _addLog('Processing timetable data ...');
@@ -137,21 +124,11 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
             _addLog('Loaded timetable entries for ${moduleCodeToTimetableEntryMap.length} modules.');
           }
 
-          var sheetModules = excel.tables['modules']!;
-          _addLog('Processing modules ...');
-          _loadModules(sheetModules);
-          _addLog('Loaded ${allModules.length} modules');
-
-          // var sheetAcademics = excel.tables['academics']!;
-          // _addLog('Processing academics ...');
-          // _loadAcademics(sheetAcademics);
-          // _addLog('Loaded ${emailToAcademic.length} academics');
-
+          // 4. read 'timetables' in data structures
           var sheetTimetables = excel.tables['timetables']!;
           _addLog('Processing timetable data ...');
           _loadTimetableViewEntries(sheetTimetables);
           _addLog('Loaded ${timetableViewEntries.length} timetable entries.');
-
 
           // 5. populate allProgrammes from timetableViewEntries
           for (var entry in timetableViewEntries) {
@@ -285,86 +262,6 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
       if(roomCode.isNotEmpty) {
         labIdToTimetableEntryMap.putIfAbsent(roomCode, () => []).add(timetableEntry);
       }
-    }
-  }
-
-  void _loadModules(Sheet sheetModules) {
-    allModules.clear();
-    for (int i = 1; i < sheetModules.rows.length; i++) {
-      var row = sheetModules.rows[i];
-      // if (row.isEmpty || row[0]?.value == null || row[0]?.value.toString() == '#') {
-      //   continue;
-      // }
-
-      String getStr(int i) => (i < row.length && row[i]?.value != null) ? row[i]!.value.toString().trim() : '';
-      double getNum(int i) {
-        if (i >= row.length || row[i]?.value == null) return 0.0;
-        final val = row[i]!.value;
-        return double.tryParse(val.toString()) ?? 0.0;
-      }
-
-      final String num = getStr(0);
-      // final String programme = getStr(1);
-      final String mode = getStr(2);
-      final String moduleCode = getStr(3);
-      final String moduleName = getStr(4);
-      final double ects = getNum(5);
-      final double hours = getNum(6);
-      final String notes = getStr(7);
-      final double pct1 = getNum(8);
-      final String tutor1 = getStr(9);
-      final bool faculty1 = getNum(10) == 1;
-      final double hoursTutor1 = getNum(11);
-      final double pct2 = getNum(12);
-      final String tutor2 = getStr(13);
-      final bool faculty2 = getNum(14) == 1;
-      final double hoursTutor2 = getNum(15);
-
-      final module = Module(
-        num: num,
-        mode: mode,
-        moduleCode: moduleCode,
-        moduleName: moduleName,
-        ects: ects,
-        hours: hours,
-        notes: notes,
-        pct1: pct1,
-        tutor1: tutor1,
-        faculty1: faculty1,
-        hoursTutor1: hoursTutor1,
-        pct2: pct2,
-        tutor2: tutor2,
-        faculty2: faculty2,
-        hoursTutor2: hoursTutor2,
-      );
-      allModules.add(module);
-      allModuleCodeToModules[moduleCode] = module;
-    }
-  }
-
-  void _loadAcademics(Sheet sheetAcademics) {
-    emailToAcademic.clear();
-    for (int i=1; i < sheetAcademics.rows.length; i++) {
-      var row = sheetAcademics.rows[i];
-
-      String getStr(int i) => (i < row.length && row[i]?.value != null) ? row[i]!.value.toString().trim() : '';
-
-      final String email = getStr(0);
-      final String name = getStr(1);
-      final String role = getStr(2);
-      final String qualifications = getStr(3);
-      final bool skip = getStr(4).toLowerCase() == "skip";
-      final String notes = getStr(5);
-
-      final academic = Academic(
-        email: email,
-        name: name,
-        role: role,
-        qualifications: qualifications,
-        skip: skip,
-        notes: notes,
-      );
-      emailToAcademic[email] = academic;
     }
   }
 
