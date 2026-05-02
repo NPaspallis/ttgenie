@@ -17,7 +17,7 @@ class TimetableUtil {
       return "<div><h3>$title</h3><p style='font-style: italic;'>No Entries</p></div>";
     }
 
-    String html = '<div><h3>$title</h3>';
+    String html = '<h3>$title</h3>';
 
     // check if any of the entries starts or ends at a :30 point
     bool halfHourSteps = false;

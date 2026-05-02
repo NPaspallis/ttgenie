@@ -32,9 +32,20 @@ class LabUtil {
     }
 
     String html = "<div>";
-    html += "<p>Modules: $moduleCodes</p>\n";
 
-    html += "<p><b>Timetables</b> (Full Year: ${fullYearTimetableEntries.isNotEmpty ? "Yes" : "No"}, Sem 1: ${sem1 ? "Yes" : "No"}, Sem 2: ${sem2 ? "Yes" : "No"}, Sem 3: ${sem3 ? "Yes" : "No"})</p>";
+    // html += "<p>Modules: $moduleCodes</p>\n";
+    //
+    // html += "<p><b>Timetables</b> (Full Year: ${fullYearTimetableEntries.isNotEmpty ? "Yes" : "No"}, Sem 1: ${sem1 ? "Yes" : "No"}, Sem 2: ${sem2 ? "Yes" : "No"}, Sem 3: ${sem3 ? "Yes" : "No"})</p>";
+
+    String htmlModules = '';
+    for(String moduleCode in moduleCodes) {
+      htmlModules += '<span class="module">$moduleCode</span>\n';
+    }
+
+    String htmlModes = '';
+    htmlModes += fullYearTimetableEntries.isNotEmpty ? '<span class="badge">Full Year <span class="check-icon">✓</span></span>\n' : '';
+    htmlModes += sem1 ? '<span class="badge">Sem 1</b> <span class="check-icon">✓</span></span>\n' : '';
+    htmlModes += sem2 ? '<span class="badge">Sem 2</b> <span class="check-icon">✓</span></span>\n' : '';
 
     if (!sem1 && !sem2) {
       html += TimetableUtil.getTimetableFromTimetableEntriesAsHtml("Full Year", timetableEntries);
@@ -50,19 +61,21 @@ class LabUtil {
 
     return template
         .replaceAll('%lab-id%', labId)
+        .replaceAll('%html_modules%', htmlModules)
+        .replaceAll('%html_modes%', htmlModes)
         .replaceAll('%lab-timetables%', html);
   }
 
   static String template = r'''
         <div class="card lab" id="room_%lab-id%">
-          <div class="lab-icon">🖥️</div>
-          <span class="card-tag">Room</span>
-          <h3>%lab-id%</h3>
-          %lab-timetables%
+          <h2><div class="lab-icon">🖥️</div>%lab-id%</h2>
           <div class="card-meta">
-            <span class="badge">Computer lab</span>
-            <span class="badge">Lecture room</span>
+            %html_modules%
           </div>
+          <div class="card-meta">
+            %html_modes%
+          </div>
+          %lab-timetables%
         </div>
   ''';
 }

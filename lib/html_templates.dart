@@ -598,12 +598,28 @@ tr {
     /* ── Timetable table (shared: academic & programme cards) ── */
     .card table {
       width: 100%;
-      border-collapse: collapse;
+      border-collapse: separate;
+      border-spacing: 0;
       margin: 12px 0 20px;
       border-radius: 8px;
-      overflow: hidden;
       box-shadow: 0 1px 6px rgba(13,27,42,0.07);
       font-size: 0.8rem;
+    }
+
+    /* Round the header corners manually */
+    .card table th:first-child {
+      border-radius: 8px 0 0 0;
+    }
+    .card table th:last-child {
+      border-radius: 0 8px 0 0;
+    }
+    
+    /* Round the bottom corners of the last row */
+    .card table tr:last-child td:first-child {
+      border-radius: 0 0 0 8px;
+    }
+    .card table tr:last-child td:last-child {
+      border-radius: 0 0 8px 0;
     }
 
     /* Period label h3 inside an academic table (e.g. "Full Year") */
