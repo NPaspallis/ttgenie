@@ -2,11 +2,12 @@
 
 ## Timetable Genie
 
-Convert data in the XLSX format into HTML for quick review.
+Converts data from the XLSX format into HTML for quick review.
 
 ## Build
 
-Generate the Web App: `flutter build web --base-href /ttgenie/`
+1. Update the version in `pubspec.yaml`
+2. Generate the Web App: `flutter build web --base-href /ttgenie/`
 
 ## Use
 

@@ -4,6 +4,7 @@ import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:ttgenie/html_generators/lab_util.dart';
 import 'package:ttgenie/html_generators/programmes_util.dart';
 import 'package:ttgenie/html_templates.dart';
@@ -85,12 +86,22 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
   void initState() {
     super.initState();
     _addLog('Console Log');
+    _initPackageInfo();
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
     super.dispose();
+  }
+
+  late PackageInfo _packageInfo = PackageInfo(version: '0.0.0', appName: '', packageName: '', buildNumber: '');
+
+  Future<void> _initPackageInfo() async {
+    final info = await PackageInfo.fromPlatform();
+    setState(() {
+      _packageInfo = info;
+    });
   }
 
   Future<void> _pickAndProcessFile() async {
@@ -475,7 +486,20 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Timetable Genie'),
+          title: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Timetable Genie'),
+              Text('version ${_packageInfo.version}', style: TextStyle(fontSize: 14.0))
+            ],
+          ),
+          leading: Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: CircleAvatar(
+              backgroundImage: NetworkImage('icons/Icon-192.png'),
+            ),
+          ),
           actions: [
             TextButton.icon(
               onPressed: _isProcessing ? null : () {
