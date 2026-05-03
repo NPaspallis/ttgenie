@@ -13,11 +13,7 @@ import 'package:universal_html/html.dart' as html;
 
 import 'html_generators/academic_util.dart';
 import 'model/data_entry.dart';
-import 'model/academic.dart';
-import 'model/module.dart';
-import 'model/structure_row.dart';
 import 'model/timetable_view_entry.dart';
-import 'util.dart';
 import 'timetable_view.dart';
 
 void main() {
@@ -52,9 +48,6 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
   static final Map<String, List<TimetableEntry>> academicIdToTimetableEntryMap = {};
   static final Map<String, List<TimetableEntry>> labIdToTimetableEntryMap = {};
   static final List<TimetableEntry> timetableEntries = [];
-  static final Set<Module> allModules = {};
-  static final Map<String, List<StructureRow>> programmeToStructureRowsMap = {};
-  static final Map<Module, List<String>> moduleToProgrammesMap = {};
   static final List<TimetableViewEntry> timetableViewEntries = [];
   static final List<String> allProgrammes = [];
   static final Map<String, List<TimetableViewEntry>> programmeToTimetableViewEntries = {};
@@ -297,48 +290,6 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
       programmeToTimetableViewEntries.putIfAbsent(programme, () => []).add(timetableViewEntry);
     }
 
-  }
-
-  // keep this unused for now
-  void _loadStructures(Sheet sheetStructures) {
-    programmeToStructureRowsMap.clear();
-    moduleToProgrammesMap.clear();
-
-    for (int i = 2; i < sheetStructures.rows.length; i++) {
-      var row = sheetStructures.rows[i];
-      if (row.isEmpty || row[1]?.value == null) continue;
-
-      String getStr(int i) => (i < row.length && row[i]?.value != null) ? row[i]!.value.toString().trim() : '';
-      double getNum(int i) {
-        if (i >= row.length || row[i]?.value == null) return 0.0;
-        final val = row[i]!.value;
-        return double.tryParse(val.toString()) ?? 0.0;
-      }
-
-      final String programme = getStr(1);
-      final String mode = getStr(2);
-      final String moduleCode = getStr(3);
-      final double facultyHours = getNum(4);
-      final double associatesHours = getNum(5);
-
-      final structureRow = StructureRow(
-        programme: programme,
-        mode: mode,
-        moduleCode: moduleCode,
-        facultyHours: facultyHours,
-        associatesHours: associatesHours,
-      );
-
-      // populate programmeToStructureRowsMap
-      programmeToStructureRowsMap.putIfAbsent(programme, () => []).add(structureRow);
-
-      // populate modulesToProgrammesMap
-      final module = Util.getModule(allModules, moduleCode, mode);
-      if (module != null) {
-        moduleToProgrammesMap.putIfAbsent(module, () => []).add(programme);
-      }
-    }
-    _addLog('Loaded structures for ${programmeToStructureRowsMap.length} programmes.');
   }
 
   Future<void> _downloadHtml() async {
