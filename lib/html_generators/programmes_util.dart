@@ -70,13 +70,13 @@ class ProgrammesUtil {
     }
 
     return programmeDivTemplate
-        .replaceAll('%programme_id%', HtmlUtil.replaceSpaces('${timetableViewEntry.programme}-${timetableViewEntry.name}'))
-        .replaceAll('%programme_name%', programmeName)
-        .replaceAll('%programme_group%', timetableViewEntry.group)
-        .replaceAll('%programme_type%', timetableViewEntry.distanceLearning ? 'distance learning' : 'conventional delivery')
-        .replaceAll('%html_modules%', htmlModules)
-        .replaceAll('%html_modes%', htmlModes)
-        .replaceAll('%html_conflicts%', htmlConflicts)
+        .replaceAll('%programme-id%', HtmlUtil.replaceSpaces('${timetableViewEntry.programme}-${timetableViewEntry.name}'))
+        .replaceAll('%programme-name%', programmeName)
+        .replaceAll('%programme-group%', timetableViewEntry.group)
+        .replaceAll('%programme-type%', timetableViewEntry.distanceLearning ? 'distance learning' : 'conventional delivery')
+        .replaceAll('%html-modules%', htmlModules)
+        .replaceAll('%html-modes%', htmlModes)
+        .replaceAll('%html-conflicts%', htmlConflicts)
         .replaceAll('%timetables-div%', html);
   }
 
@@ -87,20 +87,20 @@ class ProgrammesUtil {
   // - %programme_type% (conventional delivery | distance learning)
   // - %timetables-div%
   static const String programmeDivTemplate = r'''
-        <div class="card academic" id="%programme_id%">
-          <h2>%programme_name%</h2>
+        <div class="card academic" id="%programme-id%">
+          <h2>%programme-name%</h2>
           <div class="card-meta">
-            <span class="card-tag">%programme_group%</span>
-            <span class="card-tag">%programme_type%</span>
+            <span class="card-tag">%programme-group%</span>
+            <span class="card-tag">%programme-_type%</span>
           </div>
           <div class="card-meta">
-            %html_modules%
+            %html-modules%
           </div>
           <div class="card-meta">
-            %html_modes%
+            %html-modes%
           </div>
           <div class="card-meta">
-            %html_conflicts%
+            %html-conflicts%
           </div>
           <br/>
           %timetables-div%

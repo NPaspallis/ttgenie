@@ -1,9 +1,9 @@
 import 'dart:collection';
-import 'package:flutter/cupertino.dart';
 
 import '../html_util.dart';
-import '../model/academic.dart';
 import '../model/data_entry.dart';
+import '../model/message.dart';
+import 'conflict_util.dart';
 import 'timetable_util.dart';
 
 class AcademicUtil {
@@ -122,11 +122,18 @@ class AcademicUtil {
     }
     htmlModuleCodes += '</div>\n\n';
 
+    final List<Message> conflictMessages = ConflictUtil.findConflicts(timetableEntries ?? [], checkGroups: false);
+    String htmlConflicts = '';
+    for(final Message conflictMessage in conflictMessages) {
+      htmlConflicts += '${conflictMessage.toBadgeHtml()}\n';
+    }
+
     return academicDivTemplate
         .replaceAll('%academic-id%', HtmlUtil.replaceSpaces(academicName))
         .replaceAll('%academic-initials%', getInitials(academicName))
         .replaceAll('%academic-name%', academicName)
         .replaceAll('%academic-modes%', htmlModes)
+        .replaceAll('%html-conflicts%', htmlConflicts)
         .replaceAll('%timetables-divs%', html)
         .replaceAll('%module-divs%', htmlModuleCodes);
   }
@@ -151,6 +158,9 @@ class AcademicUtil {
           %module-divs%
           <div class="card-meta">
             %academic-modes%
+          </div>
+          <div class="card-meta">
+            %html-conflicts%
           </div>
           %timetables-divs%
         </div>

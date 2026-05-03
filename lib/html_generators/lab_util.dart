@@ -3,6 +3,8 @@ import 'dart:collection';
 import 'package:ttgenie/html_generators/timetable_util.dart';
 
 import '../model/data_entry.dart';
+import '../model/message.dart';
+import 'conflict_util.dart';
 
 class LabUtil {
   static String createLabTimetablesAsHtml(final String labId, List<TimetableEntry> timetableEntries) {
@@ -59,10 +61,17 @@ class LabUtil {
 
     html += "</div>";
 
+    final List<Message> conflictMessages = ConflictUtil.findConflicts(timetableEntries ?? [], checkGroups: false);
+    String htmlConflicts = '';
+    for(final Message conflictMessage in conflictMessages) {
+      htmlConflicts += '${conflictMessage.toBadgeHtml()}\n';
+    }
+
     return template
         .replaceAll('%lab-id%', labId)
-        .replaceAll('%html_modules%', htmlModules)
-        .replaceAll('%html_modes%', htmlModes)
+        .replaceAll('%html-modules%', htmlModules)
+        .replaceAll('%html-modes%', htmlModes)
+        .replaceAll('%html-conflicts%', htmlConflicts)
         .replaceAll('%lab-timetables%', html);
   }
 
@@ -70,10 +79,13 @@ class LabUtil {
         <div class="card lab" id="room_%lab-id%">
           <h2><div class="lab-icon">🖥️</div>%lab-id%</h2>
           <div class="card-meta">
-            %html_modules%
+            %html-modules%
           </div>
           <div class="card-meta">
-            %html_modes%
+            %html-modes%
+          </div>
+          <div class="card-meta">
+            %html-conflicts%
           </div>
           %lab-timetables%
         </div>
