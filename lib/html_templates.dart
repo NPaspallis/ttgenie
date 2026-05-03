@@ -771,7 +771,7 @@ tr {
       bottom: calc(100% + 8px);
       left: 50%;
       transform: translateX(-50%);
-      width: 240px;
+      width: 480px;
       box-shadow: 0 8px 28px rgba(0,0,0,0.22);
       border: 1px solid rgba(201,168,76,0.25);
       transition: opacity 0.18s, visibility 0.18s;

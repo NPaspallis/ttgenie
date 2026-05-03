@@ -1,6 +1,8 @@
 import 'dart:collection';
 
+import 'package:ttgenie/html_generators/conflict_util.dart';
 import 'package:ttgenie/html_generators/timetable_util.dart';
+import 'package:ttgenie/model/message.dart';
 import 'package:ttgenie/model/timetable_view_entry.dart';
 
 import '../html_util.dart';
@@ -61,6 +63,12 @@ class ProgrammesUtil {
 
     html += "</div>";
 
+    final List<Message> conflictMessages = ConflictUtil.findConflicts(timetableEntries, checkGroups: true);
+    String htmlConflicts = '';
+    for(final Message conflictMessage in conflictMessages) {
+      htmlConflicts += '${conflictMessage.toBadgeHtml()}\n';
+    }
+
     return programmeDivTemplate
         .replaceAll('%programme_id%', HtmlUtil.replaceSpaces('${timetableViewEntry.programme}-${timetableViewEntry.name}'))
         .replaceAll('%programme_name%', programmeName)
@@ -68,6 +76,7 @@ class ProgrammesUtil {
         .replaceAll('%programme_type%', timetableViewEntry.distanceLearning ? 'distance learning' : 'conventional delivery')
         .replaceAll('%html_modules%', htmlModules)
         .replaceAll('%html_modes%', htmlModes)
+        .replaceAll('%html_conflicts%', htmlConflicts)
         .replaceAll('%timetables-div%', html);
   }
 
@@ -91,8 +100,7 @@ class ProgrammesUtil {
             %html_modes%
           </div>
           <div class="card-meta">
-            <span class="error"><div class="tooltip">Conflict<span class="tooltiptext">Error 1</span></div></span>
-            <span class="warning">Warning</span>
+            %html_conflicts%
           </div>
           <br/>
           %timetables-div%
