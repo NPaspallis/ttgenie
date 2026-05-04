@@ -87,7 +87,7 @@ class ProgrammesUtil {
   // - %programme_type% (conventional delivery | distance learning)
   // - %timetables-div%
   static const String programmeDivTemplate = r'''
-        <div class="card academic" id="%programme-id%">
+        <div class="card academic page" id="%programme-id%">
           <h2>%programme-name%</h2>
           <div class="card-meta">
             <span class="card-tag">%programme-group%</span>

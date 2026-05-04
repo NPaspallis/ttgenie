@@ -129,8 +129,6 @@ class TimetableUtil {
               timeToDayToSkips[ldt]?[day] = currentSkips + 1;
             }
             final String sessionType = entry.sessionTypeName.toLowerCase();
-            // rowHtml += '<td bgcolor="${sessionTypeToColor[entry.sessionTypeName.toLowerCase()]}" rowspan="$totalNumOfTimeslots">${HtmlUtil.getModuleAsHtml(entry)}</td>';
-            // rowHtml += "<td bgcolor='#f0f0f0' rowspan='$totalNumOfTimeslots'>${HtmlUtil.getModuleAsHtml(entry)}</td>";
             rowHtml += "<td class='$sessionType' bgcolor='#f0f0f0' rowspan='$totalNumOfTimeslots'>${HtmlUtil.getModuleAsHtml(entry)}</td>";
           }
         }

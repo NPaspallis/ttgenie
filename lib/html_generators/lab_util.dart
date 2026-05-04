@@ -76,7 +76,7 @@ class LabUtil {
   }
 
   static String template = r'''
-        <div class="card lab" id="room_%lab-id%">
+        <div class="card lab page" id="room_%lab-id%">
           <h2><div class="lab-icon">🖥️</div>%lab-id%</h2>
           <div class="card-meta">
             %html-modules%

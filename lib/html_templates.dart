@@ -861,6 +861,98 @@ tr {
       font-weight: 700;
     }
 
+    @media print {
+      .page, .page-break { break-after: page; }
+    }
+
+    @media print {
+    
+      /* === Layout reset === */
+    
+      /* If the page uses a sidebar + main flex/grid layout, collapse it */
+      body {
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+    
+      /* Kill any sidebar */
+      .sidebar,
+      .side-nav,
+      aside {
+        display: none !important;
+      }
+    
+      /* Let the main content fill the full page width */
+      main,
+      .main-content,
+      .content,
+      .container {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        left: 0 !important;
+      }
+    
+      /* === Table fix: let tables scale to full page width === */
+      .card table {
+        width: 100% !important;
+        table-layout: auto !important;
+      }
+    
+      /* Shrink table text slightly so columns fit on the page */
+      .card table th,
+      .card table td {
+        font-size: 0.65rem !important;
+        padding: 4px 6px !important;
+        white-space: normal !important;   /* allow text to wrap rather than overflow */
+      }
+    
+      /* === Page margins === */
+      @page {
+        margin: 1cm;                      /* tight but readable margins all around */
+        size: A4 landscape;               /* landscape gives tables much more room */
+      }
+    
+    }
+
+    @media print {
+      nav { display: none !important; }
+    
+      body {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+      }
+    
+      /* Avoid cards or table rows breaking across pages */
+      .card {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+    
+      /* Repeat table headers on each page if a table spans multiple pages */
+      thead {
+        display: table-header-group;
+      }
+    
+      /* Hide the sidebar nav menu if you have one */
+      .nav-menus {
+        display: none !important;
+      }
+    
+      /* Make tooltips invisible — they're useless on paper */
+      .tooltiptext {
+        display: none !important;
+      }
+    
+      /* Ensure backgrounds/colours print (browsers suppress them by default) */
+      * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
   </style>
 </head>
 <body>

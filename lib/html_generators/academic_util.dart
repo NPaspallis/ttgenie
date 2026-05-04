@@ -153,7 +153,7 @@ class AcademicUtil {
   // - %academic-name%
   // - %timetables-divs%
   static const String academicDivTemplate = r'''
-        <div class="card academic" id="#academic-%academic-id%">
+        <div class="card academic page" id="#academic-%academic-id%">
           <h2><div class="card-avatar">%academic-initials%</div>%academic-name%</h2>
           %module-divs%
           <div class="card-meta">
