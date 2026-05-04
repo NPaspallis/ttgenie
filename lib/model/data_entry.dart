@@ -65,6 +65,7 @@ class TimetableEntry {
         "<span style='float:left; width:${spanWidth}px;'>Room:</span> ${roomCode.isEmpty ? "?" : roomCode}<br/>"
         "<span style='float:left; width:${spanWidth}px;'>Lecturer ID:</span> $lecturerId<br/>"
         "<span style='float:left; width:${spanWidth}px;'>Session:</span> $startTimeStr - $endTimeStr<br/>"
+        "<span style='float:left; width:${spanWidth}px;'>Type:</span> $sessionTypeName<br/>"
         "<span style='float:left; width:${spanWidth}px;'>Day:</span> $dayName<br/>"
         "<span style='float:left; width:${spanWidth}px;'>Delivery:</span> $deliveryTypeName<br/>"
         "${notes.trim().isEmpty ? "" : "<span style='float:left; width:${spanWidth}px;'>Notes:</span> $notes<br/>"}"

@@ -23,8 +23,9 @@ class HtmlUtil {
 
   static String getModuleAsHtml(TimetableEntry entry) {
     String name = entry.groupName.isEmpty ? entry.moduleCode : '${entry.moduleCode} (${entry.groupName})';
+    String room = entry.roomCode.isEmpty ? '' : ' @ ${entry.roomCode}';
     // Basic implementation - can be expanded as needed
-    return '<div class="tooltip">$name<span class="tooltiptext">${entry.toTooltipHTML()}</span></div>';
+    return '<div class="tooltip">$name<br>$room<span class="tooltiptext">${entry.toTooltipHTML()}</span></div>';
   }
 
   static String createNavbar(final List<TimetableViewEntry> timetableViewEntries, final List<String> academicNames, final List<String> labs) {

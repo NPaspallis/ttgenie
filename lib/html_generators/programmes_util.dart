@@ -91,7 +91,7 @@ class ProgrammesUtil {
           <h2>%programme-name%</h2>
           <div class="card-meta">
             <span class="card-tag">%programme-group%</span>
-            <span class="card-tag">%programme-_type%</span>
+            <span class="card-tag">%programme-type%</span>
           </div>
           <div class="card-meta">
             %html-modules%

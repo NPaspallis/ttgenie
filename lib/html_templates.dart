@@ -758,6 +758,28 @@ tr {
       width: 100%;
       height: 100%;
     }
+    
+    /* ── Session type cell colours ── */
+    .card table td.lecture {
+      background: linear-gradient(135deg, #ddeaf8, #c8ddf2) !important;
+      border: 1px solid #a8c8e8 !important;
+      color: #1a3a5c;
+      font-weight: 700;
+    }
+    
+    .card table td.tutorial {
+      background: linear-gradient(135deg, #e8f0e8, #d4e8d4) !important;
+      border: 1px solid #b8d4b8 !important;
+      color: #2d5a2d;
+      font-weight: 700;
+    }
+    
+    .card table td.practical {
+      background: linear-gradient(135deg, #f5ecd8, #eddfc4) !important;
+      border: 1px solid #d4b896 !important;
+      color: #6b4a1a;
+      font-weight: 700;
+    }
 
     .tooltiptext {
       visibility: hidden;

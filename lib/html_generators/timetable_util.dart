@@ -6,6 +6,12 @@ import 'package:intl/intl.dart';
 
 import '../model/timetable_view_entry.dart';
 
+const Map<String,String> sessionTypeToColor = {
+  'lecture':   '#007f00',
+  'tutorial':  '#00007f',
+  'practical': '#007f7f'
+};
+
 class TimetableUtil {
   static const int lunchStartHour = 11;
   static const int lunchEndHour = 15;
@@ -122,14 +128,17 @@ class TimetableUtil {
               int currentSkips = timeToDayToSkips[ldt]?[day] ?? 1;
               timeToDayToSkips[ldt]?[day] = currentSkips + 1;
             }
-            rowHtml += "<td bgcolor='#f0f0f0' rowspan='$totalNumOfTimeslots'>${HtmlUtil.getModuleAsHtml(entry)}</td>";
+            final String sessionType = entry.sessionTypeName.toLowerCase();
+            // rowHtml += '<td bgcolor="${sessionTypeToColor[entry.sessionTypeName.toLowerCase()]}" rowspan="$totalNumOfTimeslots">${HtmlUtil.getModuleAsHtml(entry)}</td>';
+            // rowHtml += "<td bgcolor='#f0f0f0' rowspan='$totalNumOfTimeslots'>${HtmlUtil.getModuleAsHtml(entry)}</td>";
+            rowHtml += "<td class='$sessionType' bgcolor='#f0f0f0' rowspan='$totalNumOfTimeslots'>${HtmlUtil.getModuleAsHtml(entry)}</td>";
           }
         }
 
         // draw empty cells
         final int skips = timeToDayToSkips[currentStartTime]?[day] ?? 1;
         for (int i = 0; i < maxConcurrentSessions - skips + 1; i++) {
-          rowHtml += lunchTime ? "<td bgcolor='#ffffc0'></td>" : "<td></td>";
+          rowHtml += lunchTime ? '<td bgcolor="#ffffc0"></td>' : '<td></td>';
         }
       }
       rowHtml += "</tr>";
