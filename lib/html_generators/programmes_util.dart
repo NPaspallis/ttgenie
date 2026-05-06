@@ -63,10 +63,16 @@ class ProgrammesUtil {
 
     html += "</div>";
 
-    final List<Message> conflictMessages = ConflictUtil.findConflicts(timetableEntries, checkGroups: true);
     String htmlConflicts = '';
+
+    final List<Message> conflictMessages = ConflictUtil.findConflicts(timetableEntries, checkGroups: true);
     for(final Message conflictMessage in conflictMessages) {
       htmlConflicts += '${conflictMessage.toBadgeHtml()}\n';
+    }
+
+    final List<Message> missingModuleMessages = ConflictUtil.findMissingModules(timetableViewEntry, timetableEntries);
+    for(final Message missingModuleMessage in missingModuleMessages) {
+      htmlConflicts += '${missingModuleMessage.toBadgeHtml()}\n';
     }
 
     return programmeDivTemplate

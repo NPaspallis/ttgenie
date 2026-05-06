@@ -1,5 +1,6 @@
 import '../model/data_entry.dart';
 import '../model/message.dart';
+import '../model/timetable_view_entry.dart';
 
 class ConflictUtil {
 
@@ -46,5 +47,24 @@ class ConflictUtil {
     if(delivery1 == 'Semester 3') return delivery2 == 'Full Year';
     if(delivery1 == 'Full Year') return delivery2 == 'Semester 3';
     return false; // always a conflict in case of 'Semester 1 and Semester 2 and Semester 3'
+  }
+
+  static List<Message> findMissingModules(TimetableViewEntry timetableViewEntry, List<TimetableEntry> timetableEntries) {
+    final List<Message> allMessages = [];
+    // find all covered modules
+    final Set<String> coveredModuleCodes = {};
+    for(TimetableEntry timetableEntry in timetableEntries) {
+      coveredModuleCodes.add(timetableEntry.moduleCode);
+    }
+
+    final List<String> timetabledModuleCodes = timetableViewEntry.values;
+    for(final String timetabledModuleCode in timetabledModuleCodes) {
+      if(!coveredModuleCodes.contains(timetabledModuleCode)) {
+        allMessages.add(Message(MessageType.warning, 'Missing $timetabledModuleCode',
+          'No entries found for timetabled module: $timetabledModuleCode', url: Message.noUrl));
+      }
+    }
+
+    return allMessages;
   }
 }
