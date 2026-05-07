@@ -76,7 +76,7 @@ tr {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Department of Computing & Mathematics</title>
+  <title>Department of Computing, Engineering & Mathematics</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -960,9 +960,11 @@ tr {
   %navbar%
 
   <!-- HERO -->
+  <!--
   <div class="hero">
-    <h1>Timetable Genie</h1>
+    <h1>Department of Computing, Engineering & Mathematics</h1>
   </div>
+   -->
 
   <!-- MAIN -->
   <main>

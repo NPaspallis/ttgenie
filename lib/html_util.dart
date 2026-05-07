@@ -13,8 +13,8 @@ class HtmlUtil {
     'Wednesday',
     'Thursday',
     'Friday',
-    'Saturday',
-    'Sunday'
+    // 'Saturday',
+    // 'Sunday'
   ];
 
   static String replaceSpaces(String text) {
