@@ -480,6 +480,15 @@ tr {
       padding: 3px 9px;
     }
 
+    .workload {
+      font-size: 1.0rem;
+      background: #e4f4f4;
+      color: #4a5555;
+      border-radius: 4px;
+      padding: 3px 9px;
+      margin-top: 18px;
+    }
+
     .module {
       font-size: 0.72rem;
       background: #4a5568;

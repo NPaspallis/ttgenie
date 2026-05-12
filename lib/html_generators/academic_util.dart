@@ -1,5 +1,7 @@
 import 'dart:collection';
 
+import 'package:flutter/foundation.dart';
+
 import '../html_util.dart';
 import '../model/data_entry.dart';
 import '../model/message.dart';
@@ -49,46 +51,35 @@ class AcademicUtil {
       deliveryTypeToTotalHours[timetableEntry.deliveryTypeName] = currentHours;
     }
 
-    // final List<String> sortedDeliveryTypes = deliveryTypeToTotalHours.keys.toList()..sort();
+    final List<String> sortedDeliveryTypes = deliveryTypeToTotalHours.keys.toList()..sort();
     
-    // html += "<p>Workload: </p><ul>\n";
-    // double totalHoursForAcademicYear = 0.0;
-    //
-    // for (final deliveryType in sortedDeliveryTypes) {
-    //   final double totalHours = deliveryTypeToTotalHours[deliveryType] ?? 0.0;
-    //   if (deliveryType.toLowerCase() == "full year") {
-    //     html += "<li><i>$deliveryType</i>: $totalHours per week (${(totalHours * 30).toStringAsFixed(0)} in total)</li>\n";
-    //     totalHoursForAcademicYear += totalHours * 30;
-    //   } else if (deliveryType.toLowerCase() == "semester 1" || deliveryType.toLowerCase() == "semester 2") {
-    //     html += "<li><i>$deliveryType</i>: $totalHours per week (${(totalHours * 15).toStringAsFixed(0)} in total)</li>\n";
-    //     totalHoursForAcademicYear += totalHours * 15;
-    //   } else if (deliveryType.toLowerCase() == "semester 3") {
-    //     html += "<li><i>$deliveryType</i>: $totalHours per week (${(totalHours * 10).toStringAsFixed(0)} in total)</li>\n";
-    //     totalHoursForAcademicYear += totalHours * 10;
-    //   } else {
-    //     debugPrint('Invalid deliveryType: $deliveryType');
-    //   }
-    // }
-    
-    // html += "<li><b>Total hours per week: ${(totalHoursForAcademicYear / 30.0).toStringAsFixed(2)} (${totalHoursForAcademicYear.toStringAsFixed(0)} hours over the academic year)</b></li>\n";
+    double totalHoursForAcademicYear = 0.0;
+    double workloadSem1 = 0, workloadSem2 = 0, workloadSem3 = 0;
 
-    // html += "<br>\n";
-    //
-    // ignore workload data for now
-    // if (academic.isFaculty) {
-    //   double academicTarget = targetHours;
-    //
-    //   if ((totalHoursForAcademicYear / 30.0).toStringAsFixed(2) == academicTarget.toStringAsFixed(2)) {
-    //     html += "<li style='color: green'>Target hours: ${academicTarget.toStringAsFixed(2)} OK!</li>\n";
-    //   } else {
-    //     final double difference = (totalHoursForAcademicYear / 30.0) - academicTarget;
-    //     html += "<li style='color: red'>Target hours: ${academicTarget.toStringAsFixed(2)} (difference: ${difference > 0 ? "+" : ""}${difference.toStringAsFixed(2)})</li>\n";
-    //   }
-    // }
-    //
-    // html += "</ul>\n";
-
-    // html += "<p><b>Timetables</b> (Full Year: ${fullYearTimetableEntries.isNotEmpty ? "Yes" : "No"}, Sem 1: ${sem1 ? "Yes" : "No"}, Sem 2: ${sem2 ? "Yes" : "No"}, Sem 3: ${sem3 ? "Yes" : "No"})</p>";
+    for (final deliveryType in sortedDeliveryTypes) {
+      final double totalHours = deliveryTypeToTotalHours[deliveryType] ?? 0.0;
+      if (deliveryType.toLowerCase() == "full year") {
+        workloadSem1 += totalHours;
+        workloadSem2 += totalHours;
+        totalHoursForAcademicYear += totalHours * 30;
+      } else if (deliveryType.toLowerCase() == "semester 1") {
+        workloadSem1 += totalHours;
+        totalHoursForAcademicYear += totalHours * 15;
+      } else if(deliveryType.toLowerCase() == "semester 2") {
+        workloadSem2 += totalHours;
+        totalHoursForAcademicYear += totalHours * 15;
+      } else if (deliveryType.toLowerCase() == "semester 3") {
+        workloadSem3 += totalHours;
+        totalHoursForAcademicYear += totalHours * 10;
+      } else {
+        debugPrint('Invalid deliveryType: $deliveryType');
+      }
+    }
+    String htmlWorkload = '<div class="workload"><b>Workload</b>: $totalHoursForAcademicYear hours in total (~<b>${(totalHoursForAcademicYear/30).toStringAsFixed(1)}</b> per week) ';
+    if(workloadSem1 > 0) htmlWorkload += '[Sem1: ${workloadSem1.toStringAsFixed(1)} hrs/week] ';
+    if(workloadSem2 > 0) htmlWorkload += '[Sem2: ${workloadSem2.toStringAsFixed(1)} hrs/week] ';
+    if(workloadSem3 > 0) htmlWorkload += '[Sem3: ${workloadSem3.toStringAsFixed(1)} hrs/week] ';
+    htmlWorkload += '</div>';
 
     String htmlModes = '';
     htmlModes += fullYearTimetableEntries.isNotEmpty ? '<span class="badge">Full Year <span class="check-icon">✓</span></span>\n' : '';
@@ -132,10 +123,11 @@ class AcademicUtil {
         .replaceAll('%academic-id%', HtmlUtil.replaceSpaces(academicName))
         .replaceAll('%academic-initials%', getInitials(academicName))
         .replaceAll('%academic-name%', academicName)
+        .replaceAll('%module-divs%', htmlModuleCodes)
         .replaceAll('%academic-modes%', htmlModes)
+        .replaceAll('%workload%', htmlWorkload)
         .replaceAll('%html-conflicts%', htmlConflicts)
-        .replaceAll('%timetables-divs%', html)
-        .replaceAll('%module-divs%', htmlModuleCodes);
+        .replaceAll('%timetables-divs%', html);
   }
 
   static String getInitials(String name) {
@@ -149,8 +141,11 @@ class AcademicUtil {
   // must replace:
   // - %academic-id% (no spaces)
   // - %academic-initials%
-  // - %academic-type% Faculty | Special Teaching Staff
   // - %academic-name%
+  // - %module-divs%
+  // - %academic-modes%
+  // - %workload%
+  // - %html-conflicts%
   // - %timetables-divs%
   static const String academicDivTemplate = r'''
         <div class="card academic page" id="#academic-%academic-id%">
@@ -159,6 +154,7 @@ class AcademicUtil {
           <div class="card-meta">
             %academic-modes%
           </div>
+          %workload%
           <div class="card-meta">
             %html-conflicts%
           </div>
