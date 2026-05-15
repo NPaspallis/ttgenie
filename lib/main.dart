@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:ttgenie/html_generators/academic_workload_util.dart';
 import 'package:ttgenie/html_generators/lab_util.dart';
 import 'package:ttgenie/html_generators/programmes_util.dart';
 import 'package:ttgenie/html_templates.dart';
@@ -26,23 +27,24 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: ExcelProcessor(),
+      home: TTGenie(),
     );
   }
 }
 
-class ExcelProcessor extends StatefulWidget {
-  const ExcelProcessor({super.key});
+class TTGenie extends StatefulWidget {
+  const TTGenie({super.key});
 
   @override
-  State<ExcelProcessor> createState() => _ExcelProcessorState();
+  State<TTGenie> createState() => _TTGenieState();
 }
 
-class _ExcelProcessorState extends State<ExcelProcessor> {
+class _TTGenieState extends State<TTGenie> {
 
   final List<String> _logs = [];
   final ScrollController _scrollController = ScrollController();
   bool _isProcessing = false;
+  bool _includeWorkload = false;
 
   static final Map<String, List<TimetableEntry>> moduleCodeToTimetableEntryMap = {};
   static final Map<String, List<TimetableEntry>> academicIdToTimetableEntryMap = {};
@@ -52,6 +54,7 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
   static final List<String> allProgrammes = [];
   static final Map<String, List<TimetableViewEntry>> programmeToTimetableViewEntries = {};
   static final Map<String, String> academicIdlToName = {};
+  static final Map<String, String> academicIdlToRank = {};
 
   String _htmlTimetable = '';
 
@@ -67,6 +70,13 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
     super.initState();
     _addLog('Console Log');
     _initPackageInfo();
+
+    // Access URL query parameters
+    final queryParams = Uri.base.queryParameters;
+    if (queryParams.containsKey('workload')) {
+      _includeWorkload = true;
+      debugPrint('Received workload flag from URL');
+    }
   }
 
   @override
@@ -155,7 +165,8 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
           for(String academicId in academicIds) {
             final List<TimetableEntry> selectedTimetableEntries = academicIdToTimetableEntryMap[academicId.toLowerCase()]!;
             final String academicName = academicIdlToName[academicId.toLowerCase()]!;
-            htmlAcademics += '${AcademicUtil.createAcademicTimetablesAsDiv(academicName, selectedTimetableEntries, 0)}\n\n';
+            final String academicRank = academicIdlToRank[academicId.toLowerCase()]!;
+            htmlAcademics += '${AcademicUtil.createAcademicTimetablesAsDiv(academicName, academicRank, selectedTimetableEntries, 0)}\n\n';
           }
 
           // 6.c for rooms and labs
@@ -167,12 +178,19 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
             htmlLabs += '${LabUtil.createLabTimetablesAsHtml(labId, selectedTimetableEntries)}\n\n';
           }
 
-          String htmlNavbar = HtmlUtil.createNavbar(timetableViewEntries, academicNames, labIds.toList());
+          // 7. optionally, generate workload table
+          String htmlWorkloadSection = '';
+          if(_includeWorkload) {
+            htmlWorkloadSection = AcademicWorkloadUtil.createAcademicWorkloadAsHtml(academicIdlToName, academicIdlToRank, academicIdToTimetableEntryMap);
+          }
+
+          String htmlNavbar = HtmlUtil.createNavbar(timetableViewEntries, academicNames, labIds.toList(), _includeWorkload);
           String html = HtmlTemplates.htmlPageModern
               .replaceAll('%navbar%', htmlNavbar)
               .replaceAll('%programmes-divs%', htmlProgrammes)
               .replaceAll('%academics-divs%', htmlAcademics)
-              .replaceAll('%labs-divs%', htmlLabs);
+              .replaceAll('%labs-divs%', htmlLabs)
+              .replaceAll("<!-- %workload% -->", htmlWorkloadSection);
           setState(() => _htmlTimetable = html);
 
         } else {
@@ -194,6 +212,7 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
     moduleCodeToTimetableEntryMap.clear();
     academicIdToTimetableEntryMap.clear();
     academicIdlToName.clear();
+    academicIdlToRank.clear();
 
     for (int i = 1; i < sheetTimetables.rows.length; i++) {
       var row = sheetTimetables.rows[i];
@@ -224,6 +243,7 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
       final String groupName = getStr(15);
       final String lecturerId = getStr(16);
       final String notes = getStr(17);
+      final String rank = getStr(18);
 
       if (moduleCode.isEmpty) continue;
 
@@ -251,6 +271,7 @@ class _ExcelProcessorState extends State<ExcelProcessor> {
       moduleCodeToTimetableEntryMap.putIfAbsent(moduleCode, () => []).add(timetableEntry);
       academicIdToTimetableEntryMap.putIfAbsent(lecturerId.toLowerCase(), () => []).add(timetableEntry);
       academicIdlToName[lecturerId.toLowerCase()] = lecturerName;
+      academicIdlToRank[lecturerId.toLowerCase()] = rank;
       timetableEntries.add(timetableEntry);
       if(roomCode.isNotEmpty) {
         labIdToTimetableEntryMap.putIfAbsent(roomCode, () => []).add(timetableEntry);

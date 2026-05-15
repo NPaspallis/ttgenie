@@ -12,6 +12,7 @@ class AcademicUtil {
 
   static String createAcademicTimetablesAsDiv(
       final String academicName,
+      final String academicRank,
       List<TimetableEntry>? timetableEntries,
       final double targetHours) {
     
@@ -123,6 +124,7 @@ class AcademicUtil {
         .replaceAll('%academic-id%', HtmlUtil.replaceSpaces(academicName))
         .replaceAll('%academic-initials%', getInitials(academicName))
         .replaceAll('%academic-name%', academicName)
+        .replaceAll('%academic-rank%', academicRank)
         .replaceAll('%module-divs%', htmlModuleCodes)
         .replaceAll('%academic-modes%', htmlModes)
         .replaceAll('%workload%', htmlWorkload)
@@ -149,6 +151,9 @@ class AcademicUtil {
   // - %timetables-divs%
   static const String academicDivTemplate = r'''
         <div class="card academic page" id="#academic-%academic-id%">
+          <div class="card-meta">
+            <div class="rank-badge">%academic-rank%</div>
+          </div>
           <h2><div class="card-avatar">%academic-initials%</div>%academic-name%</h2>
           %module-divs%
           <div class="card-meta">

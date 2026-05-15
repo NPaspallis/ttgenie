@@ -1,16 +1,6 @@
-import 'package:ttgenie/timetable_view.dart';
-
 import '../html_util.dart';
 import '../model/data_entry.dart';
 import 'package:intl/intl.dart';
-
-import '../model/timetable_view_entry.dart';
-
-const Map<String,String> sessionTypeToColor = {
-  'lecture':   '#007f00',
-  'tutorial':  '#00007f',
-  'practical': '#007f7f'
-};
 
 class TimetableUtil {
   static const int lunchStartHour = 11;
@@ -69,14 +59,20 @@ class TimetableUtil {
 
     // initiate max concurrent sessions map
     final Map<String, int> dayToMaxConcurrentSessions = {};
+    final Map<String, Map<String,int>> dayToModuleCodeToColumn = {};
     for (String day in HtmlUtil.weekdays) {
       dayToMaxConcurrentSessions[day] = 1;
+      dayToModuleCodeToColumn[day] = {};
       for (DateTime ldt = minStartTime;
           ldt.isBefore(maxEndTime);
           ldt = ldt.add(Duration(minutes: stepPeriod))) {
         int numOfConcurrentSessions = timeToDayToModuleCodes[ldt]?[day]?.length ?? 0;
         if (numOfConcurrentSessions > dayToMaxConcurrentSessions[day]!) {
           dayToMaxConcurrentSessions[day] = numOfConcurrentSessions;
+          final List<TimetableEntry> concurrentTimetableEntries = timeToDayToModuleCodes[ldt]![day]!;
+          for(int i=0; i<concurrentTimetableEntries.length; i++) {
+            dayToModuleCodeToColumn[day]![concurrentTimetableEntries[i].moduleCode] = i;
+          }
         }
       }
     }
@@ -84,21 +80,20 @@ class TimetableUtil {
     // create the header row
     html += "<tr><th><i>Time</i></th>";
     for (String day in HtmlUtil.weekdays) {
-      int colspan = (dayToMaxConcurrentSessions[day] ?? 1).clamp(1, 100);
-      html += "<th colspan='$colspan' style='min-width:150px;'>$day</th>";
+      html += "<th colspan='${dayToMaxConcurrentSessions[day]!}' style='min-width:150px;'>$day</th>";
     }
     html += "</tr>";
 
-    // initiate skip map
-    final Map<DateTime, Map<String, int>> timeToDayToSkips = {};
+    // initiate vertical skip map
+    final Map<DateTime, Map<String, int>> timeToDayToVerticalSkips = {};
     for (DateTime ldt = minStartTime;
         ldt.isBefore(maxEndTime);
         ldt = ldt.add(Duration(minutes: stepPeriod))) {
-      final Map<String, int> dayToSkips = {};
+      final Map<String, int> dayToVerticalSkips = {};
       for (String day in HtmlUtil.weekdays) {
-        dayToSkips[day] = 1;
+        dayToVerticalSkips[day] = 1;
       }
-      timeToDayToSkips[ldt] = dayToSkips;
+      timeToDayToVerticalSkips[ldt] = dayToVerticalSkips;
     }
 
     final DateFormat timeFormat = DateFormat('HH:mm');
@@ -111,30 +106,30 @@ class TimetableUtil {
       final Map<String, List<TimetableEntry>>? dayToModuleCodes = timeToDayToModuleCodes[currentStartTime];
       String rowHtml = "<tr>";
 
-      String timeRange = "${timeFormat.format(currentStartTime)} - ${timeFormat.format(currentStartTime.add(Duration(minutes: stepPeriod)))}";
+      final String timeRange = "${timeFormat.format(currentStartTime)} - ${timeFormat.format(currentStartTime.add(Duration(minutes: stepPeriod)))}";
       rowHtml += lunchTime ? "<td bgcolor='#ffffc0'><i>$timeRange</i></td>" : "<td><i>$timeRange</i></td>";
 
       for (String day in HtmlUtil.weekdays) {
         final List<TimetableEntry> entries = dayToModuleCodes?[day] ?? [];
         final int maxConcurrentSessions = dayToMaxConcurrentSessions[day] ?? 1;
-        
+
         for (var entry in entries) {
           if (entry.startTime == currentStartTime) {
-            int totalNumOfTimeslots = entry.endTime.difference(entry.startTime).inMinutes ~/ stepPeriod;
-            
+            int totalNumOfVerticalTimeslots = entry.endTime.difference(entry.startTime).inMinutes ~/ stepPeriod;
+            // compute vertical skips
             for (DateTime ldt = entry.startTime;
                 ldt.isBefore(entry.endTime);
                 ldt = ldt.add(Duration(minutes: stepPeriod))) {
-              int currentSkips = timeToDayToSkips[ldt]?[day] ?? 1;
-              timeToDayToSkips[ldt]?[day] = currentSkips + 1;
+              int currentSkips = timeToDayToVerticalSkips[ldt]?[day] ?? 1;
+              timeToDayToVerticalSkips[ldt]?[day] = currentSkips + 1;
             }
             final String sessionType = entry.sessionTypeName.toLowerCase();
-            rowHtml += "<td class='$sessionType' bgcolor='#f0f0f0' rowspan='$totalNumOfTimeslots'>${HtmlUtil.getModuleAsHtml(entry)}</td>";
+            rowHtml += "<td class='$sessionType' bgcolor='#f0f0f0' rowspan='$totalNumOfVerticalTimeslots'>${HtmlUtil.getModuleAsHtml(entry)}</td>";
           }
         }
 
         // draw empty cells
-        final int skips = timeToDayToSkips[currentStartTime]?[day] ?? 1;
+        final int skips = timeToDayToVerticalSkips[currentStartTime]?[day] ?? 1;
         for (int i = 0; i < maxConcurrentSessions - skips + 1; i++) {
           rowHtml += lunchTime ? '<td bgcolor="#ffffc0"></td>' : '<td></td>';
         }

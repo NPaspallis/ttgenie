@@ -28,7 +28,7 @@ class HtmlUtil {
     return '<div class="tooltip">$name<br>$room<span class="tooltiptext">${entry.toTooltipHTML()}</span></div>';
   }
 
-  static String createNavbar(final List<TimetableViewEntry> timetableViewEntries, final List<String> academicNames, final List<String> labs) {
+  static String createNavbar(final List<TimetableViewEntry> timetableViewEntries, final List<String> academicNames, final List<String> labs, bool withWorkload) {
 
     final Map<String, Set<String>> groupToProgrammes = {};
     final Map<String, List<TimetableViewEntry>> programmeToTimetableViewEntries = {};
@@ -93,10 +93,33 @@ class HtmlUtil {
       htmlLabs += '<a href="#room_$lab"><span></span>$lab</a>\n\n';
     }
 
+    String htmlWorkload = '';
+    if(withWorkload) {
+
+      String htmlWorkloadAcademics = '';
+      for(int i=0; i < numOfAcademicsGroups; i++) {
+        htmlWorkloadAcademics += '<div class="mega-col">\n';
+        htmlWorkloadAcademics += '<div class="mega-col-title">${groupNames[i]}</div>\n\n';
+
+        final int firstIndex = i*numOfAcademicsPerGroup;
+        final int lastIndex = i<numOfAcademicsGroups-1 ? (i+1)*numOfAcademicsPerGroup : academicNames.length;
+        for(int j=firstIndex; j<lastIndex; j++) {
+          final String url = replaceSpaces('workload-academic-${academicNames[j]}');
+          htmlWorkloadAcademics += '<a href="#$url"><span></span>${academicNames[j]}</a>\n';
+          htmlWorkloadAcademics += '\n';
+        }
+
+        htmlWorkloadAcademics += '</div>\n\n';
+      }
+
+      htmlWorkload = workloadHeader.replaceAll('%workload-academics-links%', htmlWorkloadAcademics);
+    }
+
     return navbarTemplate
         .replaceAll('%programmes-links%', htmlProgrammes)
         .replaceAll('%academics-links%', htmlAcademics)
-        .replaceAll('%labs-links%', htmlLabs);
+        .replaceAll('%labs-links%', htmlLabs)
+        .replaceAll('<!-- %with-workload% -->', htmlWorkload);
   }
 
   static String navbarTemplate = '''
@@ -134,7 +157,21 @@ class HtmlUtil {
         </div>
       </li>
 
+      <!-- %with-workload% -->
     </ul>
   </nav>
+''';
+
+  static String workloadHeader = '''
+      <li class="has-mega">
+      <a href="#workload">Workload</a>
+      <div class="mega-menu">
+        <div class="mega-inner">
+
+        %workload-academics-links%
+
+        </div>
+      </div>
+    </li>
 ''';
 }

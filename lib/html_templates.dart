@@ -470,12 +470,21 @@ tr {
       flex-wrap: wrap;
       gap: 8px;
       margin-top: 18px;
+      margin-bottom: 18px;
     }
 
     .badge {
       font-size: 0.72rem;
       background: #f0f4f8;
       color: #4a5568;
+      border-radius: 4px;
+      padding: 3px 9px;
+    }
+
+    .rank-badge {
+      font-size: 0.96rem;
+      background: #e0e4e8;
+      color: #2a3548;
       border-radius: 4px;
       padding: 3px 9px;
     }
@@ -962,6 +971,102 @@ tr {
         print-color-adjust: exact;
       }
     }
+
+    /* ══════════════════════════════════════════
+       WORKLOAD TABLE
+    ══════════════════════════════════════════ */
+    
+    /* Wrap the table in a card-like container */
+    #workload .cards {
+      display: block;           /* override the grid layout used by other sections */
+      max-width: 900px;
+    }
+    
+    #workload table {
+      width: 100%;
+      border-collapse: collapse;
+      border: none;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(13,27,42,0.1);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+    }
+    
+    /* Header row */
+    #workload table th {
+      background: var(--navy);
+      color: var(--gold-light);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 12px 16px;
+      text-align: center;
+      border: none;
+      white-space: nowrap;
+    }
+    
+    /* Name column header — left-aligned */
+    #workload table th:first-child {
+      text-align: left;
+      color: rgba(232,201,122,0.6);
+      min-width: 180px;
+    }
+    
+    /* Body cells */
+    #workload table td {
+      padding: 10px 16px;
+      text-align: center;
+      border: none;
+      border-bottom: 1px solid #eee8dc;
+      color: var(--muted);
+      background: #fff;
+      transition: background 0.15s;
+    }
+    
+    /* Name cell */
+    #workload table td:first-child {
+      text-align: left;
+      color: var(--navy);
+      font-weight: 600;
+      background: #faf7f2;
+      border-right: 2px solid var(--gold);
+    }
+    
+    /* Alternating rows */
+    #workload table tr:nth-child(even) td {
+      background: #f9f6f1;
+    }
+    #workload table tr:nth-child(even) td:first-child {
+      background: #f3efe8;
+    }
+    
+    /* Hover highlight */
+    #workload table tr:hover td {
+      background: #eef4fb;
+    }
+    #workload table tr:hover td:first-child {
+      background: #e4eef8;
+    }
+    
+    /* Summary columns (Overall hrs, Weekly hrs) — visually distinct */
+    #workload table td:nth-child(5),
+    #workload table td:nth-child(6),
+    #workload table th:nth-child(5),
+    #workload table th:nth-child(6) {
+      background: #f0f4f0;
+      font-weight: 700;
+      color: #2d5a2d;
+      border-left: 1px solid #c8dcc8;
+    }
+    
+    #workload table th:nth-child(5),
+    #workload table th:nth-child(6) {
+      background: #1a3a1a;
+      color: #9fcf9f;
+    }
+    
   </style>
 </head>
 <body>
@@ -1019,6 +1124,8 @@ tr {
 
       </div>
     </section>
+
+    <!-- %workload% -->
 
   </main>
 
