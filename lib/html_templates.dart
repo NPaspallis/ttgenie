@@ -1007,11 +1007,17 @@ tr {
       white-space: nowrap;
     }
     
-    /* Name column header — left-aligned */
-    #workload table th:first-child {
+    /* Rank column header */
+    #workload table td:first-child {
+      text-align: right;
+      color: rgba(132,101,22);
+      min-width: 100px;
+    }
+    /* Name column header */
+    #workload table td:nth-child(2) {
       text-align: left;
       color: rgba(232,201,122,0.6);
-      min-width: 180px;
+      min-width: 200px;
     }
     
     /* Body cells */
@@ -1026,7 +1032,7 @@ tr {
     }
     
     /* Name cell */
-    #workload table td:first-child {
+    #workload table td:first-child td:nth-child(2) {
       text-align: left;
       color: var(--navy);
       font-weight: 600;
@@ -1051,18 +1057,18 @@ tr {
     }
     
     /* Summary columns (Overall hrs, Weekly hrs) — visually distinct */
-    #workload table td:nth-child(5),
     #workload table td:nth-child(6),
-    #workload table th:nth-child(5),
-    #workload table th:nth-child(6) {
+    #workload table td:nth-child(7),
+    #workload table th:nth-child(6),
+    #workload table th:nth-child(7) {
       background: #f0f4f0;
       font-weight: 700;
       color: #2d5a2d;
       border-left: 1px solid #c8dcc8;
     }
     
-    #workload table th:nth-child(5),
-    #workload table th:nth-child(6) {
+    #workload table th:nth-child(6),
+    #workload table th:nth-child(7) {
       background: #1a3a1a;
       color: #9fcf9f;
     }

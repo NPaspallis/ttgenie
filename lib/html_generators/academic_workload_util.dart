@@ -7,7 +7,7 @@ class AcademicWorkloadUtil {
 
   static String createAcademicWorkloadAsHtml(final Map<String, String> academicIdlToName, final Map<String, String> academicIdlToRank, final Map<String, List<TimetableEntry>> academicIdToTimetableEntryMap) {
 
-    String workloadTable = '<table><tr><th>Name</th><th>Semester 1</th><th>Semester 2</th><th>Semester 3</th><th>Overall hours</th><th>Weekly hours</th></tr>';
+    String workloadTable = '<table><tr><th></th><th>Name</th><th>Semester 1</th><th>Semester 2</th><th>Semester 3</th><th>Overall hours</th><th>Weekly hours</th></tr>';
 
     List<String> academicIds = academicIdToTimetableEntryMap.keys.toList();
     academicIds.sort((id1,id2) => compare(academicIdlToName[id1]!, academicIdlToRank[id1]!, academicIdlToName[id2]!, academicIdlToRank[id2]!));
@@ -37,7 +37,8 @@ class AcademicWorkloadUtil {
       final String url = HtmlUtil.replaceSpaces('workload-academic-$academicName');
       workloadTable += '''
         <tr id="$url">
-          <td><b>$academicRank <a href="#$academicUrl">$academicName</a></b></td>
+          <td style="text-align: right;">$academicRank</td>
+          <td><b><a href="#$academicUrl">$academicName</a></b></td>
           <td>${sem1_hours > 0 ? sem1_hours.toStringAsFixed(1) : ''}</td>
           <td>${sem2_hours > 0 ? sem2_hours.toStringAsFixed(1) : ''}</td>
           <td>${sem3_hours > 0 ? sem3_hours.toStringAsFixed(1) : ''}</td>
