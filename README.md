@@ -8,6 +8,7 @@ Converts data from the XLSX format into HTML for quick review.
 
 1. Update the version in `pubspec.yaml`
 2. Generate the Web App: `flutter build web --base-href /ttgenie/`
+3. Copy the output from `build/web/**` into `docs/`
 
 ## Use
 
