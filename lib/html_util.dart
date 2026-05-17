@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:ttgenie/html_generators/academic_workload_util.dart';
+
 import 'model/data_entry.dart';
 import 'model/timetable_view_entry.dart';
 
@@ -28,7 +30,7 @@ class HtmlUtil {
     return '<div class="tooltip">$name<br>$room<span class="tooltiptext">${entry.toTooltipHTML()}</span></div>';
   }
 
-  static String createNavbar(final List<TimetableViewEntry> timetableViewEntries, final List<String> academicNames, final List<String> labs, bool withWorkload) {
+  static String createNavbar(final List<TimetableViewEntry> timetableViewEntries, final Map<String,String> academicIdsToNames, final Map<String,String> academicIdsToRanks, final List<String> labs, bool withWorkload) {
 
     final Map<String, Set<String>> groupToProgrammes = {};
     final Map<String, List<TimetableViewEntry>> programmeToTimetableViewEntries = {};
@@ -61,26 +63,29 @@ class HtmlUtil {
       htmlProgrammes += '</div>\n\n';
     }
 
-    const int numOfAcademicsGroups = 4;
-    int numOfAcademicsPerGroup = (academicNames.length / numOfAcademicsGroups).ceil();
-    List<String> groupNames = [];
-    for(int i=0; i<numOfAcademicsGroups; i++) {
-      String firstLetter = i==0 ? 'A' : academicNames[i*numOfAcademicsPerGroup][0];
-      int lastIndex = min((i+1)*numOfAcademicsPerGroup-1, academicNames.length-1);
-      String lastLetter = i<numOfAcademicsGroups-1 ? academicNames[lastIndex][0] : 'Z';
-      groupNames.add('$firstLetter to $lastLetter');
-    }
+    List<String> groupNames = ['Prof. & Assoc. Prof.', 'Assist. Prof.', 'Lecturer & Lecturer (TO)', 'STS'];
 
+    final List<String> academicIds = academicIdsToRanks.keys.toList();
+    academicIds.sort((id1, id2) => AcademicWorkloadUtil.compare(academicIdsToNames[id1]!, academicIdsToRanks[id1]!, academicIdsToNames[id2]!, academicIdsToRanks[id2]!));
     String htmlAcademics = '';
-    for(int i=0; i < numOfAcademicsGroups; i++) {
+    for(int i=0; i < groupNames.length; i++) {
       htmlAcademics += '<div class="mega-col">\n';
       htmlAcademics += '<div class="mega-col-title">${groupNames[i]}</div>\n\n';
 
-      final int firstIndex = i*numOfAcademicsPerGroup;
-      final int lastIndex = i<numOfAcademicsGroups-1 ? (i+1)*numOfAcademicsPerGroup : academicNames.length;
-      for(int j=firstIndex; j<lastIndex; j++) {
-        final String url = replaceSpaces('academic-${academicNames[j]}');
-        htmlAcademics += '<a href="#$url"><span></span>${academicNames[j]}</a>\n';
+      for(String academicId in academicIds) {
+        final String academicRank = academicIdsToRanks[academicId]!;
+        if(i==0 && !(academicRank == 'Prof.' || academicRank == 'Assoc. Prof.')) {
+          continue;
+        } else if(i==1 && academicRank != 'Assist. Prof.') {
+          continue;
+        } else if(i==2 && !(academicRank == 'Lecturer' || academicRank == 'Lecturer (TO)')) {
+          continue;
+        } else if(i==3 && academicRank != 'STS') {
+          continue;
+        }
+        final String academicName = academicIdsToNames[academicId]!;
+        final String url = replaceSpaces('academic-$academicName');
+        htmlAcademics += '<a href="#$url"><span></span>$academicName</a>\n';
         htmlAcademics += '\n';
       }
 
@@ -96,16 +101,23 @@ class HtmlUtil {
     String htmlWorkload = '';
     if(withWorkload) {
 
+      const int numOfAcademicsGroups = 4;
+      final int numOfAcademics = academicIdsToNames.length;
+      int numOfAcademicsPerGroup = (numOfAcademics / numOfAcademicsGroups).ceil();
+      // int numOfAcademicsPerGroup = (academicNames.length / numOfAcademicsGroups).ceil();
       String htmlWorkloadAcademics = '';
       for(int i=0; i < numOfAcademicsGroups; i++) {
         htmlWorkloadAcademics += '<div class="mega-col">\n';
         htmlWorkloadAcademics += '<div class="mega-col-title">${groupNames[i]}</div>\n\n';
 
         final int firstIndex = i*numOfAcademicsPerGroup;
-        final int lastIndex = i<numOfAcademicsGroups-1 ? (i+1)*numOfAcademicsPerGroup : academicNames.length;
+        // final int lastIndex = i<numOfAcademicsGroups-1 ? (i+1)*numOfAcademicsPerGroup : academicNames.length;
+        final int lastIndex = i<numOfAcademicsGroups-1 ? (i+1)*numOfAcademicsPerGroup : numOfAcademics;
+        final List<String> academicNames = academicIdsToNames.values.toList();
         for(int j=firstIndex; j<lastIndex; j++) {
-          final String url = replaceSpaces('workload-academic-${academicNames[j]}');
-          htmlWorkloadAcademics += '<a href="#$url"><span></span>${academicNames[j]}</a>\n';
+          String academicName = academicNames[j];
+          final String url = replaceSpaces('workload-academic-$academicName');
+          htmlWorkloadAcademics += '<a href="#$url"><span></span>$academicName</a>\n';
           htmlWorkloadAcademics += '\n';
         }
 

@@ -184,7 +184,7 @@ class _TTGenieState extends State<TTGenie> {
             htmlWorkloadSection = AcademicWorkloadUtil.createAcademicWorkloadAsHtml(academicIdlToName, academicIdlToRank, academicIdToTimetableEntryMap);
           }
 
-          String htmlNavbar = HtmlUtil.createNavbar(timetableViewEntries, academicNames, labIds.toList(), _includeWorkload);
+          String htmlNavbar = HtmlUtil.createNavbar(timetableViewEntries, academicIdlToName, academicIdlToRank, labIds.toList(), _includeWorkload);
           String html = HtmlTemplates.htmlPageModern
               .replaceAll('%navbar%', htmlNavbar)
               .replaceAll('%programmes-divs%', htmlProgrammes)
