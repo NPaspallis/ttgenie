@@ -150,7 +150,7 @@ class AcademicUtil {
   // - %html-conflicts%
   // - %timetables-divs%
   static const String academicDivTemplate = r'''
-        <div class="card academic page" id="#academic-%academic-id%">
+        <div class="card academic page" id="academic-%academic-id%">
           <div class="card-meta">
             <div class="rank-badge">%academic-rank%</div>
           </div>

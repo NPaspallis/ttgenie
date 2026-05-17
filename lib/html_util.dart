@@ -79,7 +79,7 @@ class HtmlUtil {
       final int firstIndex = i*numOfAcademicsPerGroup;
       final int lastIndex = i<numOfAcademicsGroups-1 ? (i+1)*numOfAcademicsPerGroup : academicNames.length;
       for(int j=firstIndex; j<lastIndex; j++) {
-        final String url = replaceSpaces('#academic-${academicNames[j]}');
+        final String url = replaceSpaces('academic-${academicNames[j]}');
         htmlAcademics += '<a href="#$url"><span></span>${academicNames[j]}</a>\n';
         htmlAcademics += '\n';
       }

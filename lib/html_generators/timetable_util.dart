@@ -26,9 +26,7 @@ class TimetableUtil {
     final int stepPeriod = halfHourSteps ? HtmlUtil.stepInMinsHalfHour : HtmlUtil.stepInMinsFullHour;
 
     // compute the min and max timeslot
-    // DateTime minStartTime = selectedTimetableEntries[0].startTime;
     DateTime minStartTime = DateTime(2026, 1, 1, selectedTimetableEntries[0].startTime.hour, selectedTimetableEntries[0].startTime.minute);
-    // DateTime maxEndTime = selectedTimetableEntries[0].endTime;
     DateTime maxEndTime = DateTime(2026, 1, 1, selectedTimetableEntries[0].endTime.hour, selectedTimetableEntries[0].endTime.minute);
     for (final entry in selectedTimetableEntries) {
       if (entry.startTime.isBefore(minStartTime)) minStartTime = entry.startTime;
