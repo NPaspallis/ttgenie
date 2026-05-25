@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import '../html_util.dart';
 import '../model/data_entry.dart';
 import 'package:intl/intl.dart';
@@ -78,11 +80,11 @@ class TimetableUtil {
     // create the header row
     html += "<tr><th><i>Time</i></th>";
     for (String day in HtmlUtil.weekdays) {
-      html += "<th colspan='${dayToMaxConcurrentSessions[day]!}' style='min-width:150px;'>$day</th>";
+      html += "<th colspan='${dayToMaxConcurrentSessions[day]!}' style='min-width:150px;' class='day-start'>$day</th>";
     }
     html += "</tr>";
 
-    // initiate vertical skip map
+    // initiate vertical skip map - this map has per timeslot, a map which says for each day whether that specific slot is used by a session which started earlier
     final Map<DateTime, Map<String, int>> timeToDayToVerticalSkips = {};
     for (DateTime ldt = minStartTime;
         ldt.isBefore(maxEndTime);
@@ -96,6 +98,7 @@ class TimetableUtil {
 
     final DateFormat timeFormat = DateFormat('HH:mm');
 
+    // visit all timeslots in the range, in ascending order
     for (DateTime currentStartTime = minStartTime;
         currentStartTime.isBefore(maxEndTime);
         currentStartTime = currentStartTime.add(Duration(minutes: stepPeriod))) {
@@ -105,16 +108,19 @@ class TimetableUtil {
       String rowHtml = "<tr>";
 
       final String timeRange = "${timeFormat.format(currentStartTime)} - ${timeFormat.format(currentStartTime.add(Duration(minutes: stepPeriod)))}";
-      rowHtml += lunchTime ? "<td bgcolor='#ffffc0'><i>$timeRange</i></td>" : "<td><i>$timeRange</i></td>";
+      rowHtml += lunchTime ? "<td><i>$timeRange</i></td>" : "<td><i>$timeRange</i></td>";
 
+      // visit all week days, one by one, in ascending order
       for (String day in HtmlUtil.weekdays) {
-        final List<TimetableEntry> entries = dayToModuleCodes?[day] ?? [];
-        final int maxConcurrentSessions = dayToMaxConcurrentSessions[day] ?? 1;
+        final List<TimetableEntry> entries = dayToModuleCodes?[day] ?? []; // all entries for that day
+        final int maxConcurrentSessions = dayToMaxConcurrentSessions[day] ?? 1; // in case there are timeslots that day with more than one entries, compute the max entries
 
+        // bool firstEntryInDay = true;//todo
+        bool firstEntryInDay = (timeToDayToVerticalSkips[currentStartTime]?[day] ?? 1) <= 1;
         for (var entry in entries) {
           if (entry.startTime == currentStartTime) {
-            int totalNumOfVerticalTimeslots = entry.endTime.difference(entry.startTime).inMinutes ~/ stepPeriod;
-            // compute vertical skips
+            final int totalNumOfVerticalTimeslots = entry.endTime.difference(entry.startTime).inMinutes ~/ stepPeriod;
+            // compute vertical skips -
             for (DateTime ldt = entry.startTime;
                 ldt.isBefore(entry.endTime);
                 ldt = ldt.add(Duration(minutes: stepPeriod))) {
@@ -122,14 +128,17 @@ class TimetableUtil {
               timeToDayToVerticalSkips[ldt]?[day] = currentSkips + 1;
             }
             final String sessionType = entry.sessionTypeName.toLowerCase();
-            rowHtml += "<td class='$sessionType' bgcolor='#f0f0f0' rowspan='$totalNumOfVerticalTimeslots'>${HtmlUtil.getModuleAsHtml(entry)}</td>";
+            rowHtml += "<td class='$sessionType${firstEntryInDay ? ' day-start' : ''}' rowspan='$totalNumOfVerticalTimeslots'>${HtmlUtil.getModuleAsHtml(entry)}</td>";
+            firstEntryInDay = false;
           }
         }
 
         // draw empty cells
         final int skips = timeToDayToVerticalSkips[currentStartTime]?[day] ?? 1;
+        firstEntryInDay = skips <= 1;
         for (int i = 0; i < maxConcurrentSessions - skips + 1; i++) {
-          rowHtml += lunchTime ? '<td bgcolor="#ffffc0"></td>' : '<td></td>';
+          rowHtml += lunchTime ? '<td bgcolor="#ffffc0"${firstEntryInDay ? ' class="day-start"' : ''}"></td>' : '<td${firstEntryInDay ? ' class="day-start"' : ''}></td>';
+          firstEntryInDay = false;
         }
       }
       rowHtml += "</tr>";

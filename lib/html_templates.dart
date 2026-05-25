@@ -1072,7 +1072,38 @@ tr {
       background: #1a3a1a;
       color: #9fcf9f;
     }
-    
+
+  /* ── DAY SEPARATORS ── */
+
+  /*
+    Each day group starts at a predictable column position because the
+    "Time" column is always col 1, and each day header uses colspan.
+    The trick: target the FIRST td under each new day group by giving
+    the leftmost cell of each day a visible left border.
+  
+    Since days vary in colspan per table, the cleanest universal approach
+    is to style the th boundaries and carry that border down using a
+    CSS column-rule via the th's border-left.
+  */
+  
+  /* Left border on every day header (skip the Time header) */
+  .card table th:not(:first-child) {
+    border-left: 2px solid rgba(201, 168, 76, 0.7);  /* gold, semi-transparent */
+  }
+  
+  /* Carry the separator down through all body cells that start a new day.
+     We need to mirror the border on the td directly below each th boundary.
+     The reliable way: add a class "day-start" to those tds in the HTML (see note below),
+     OR use the nth-child trick if your column counts are fixed. */
+  
+  .card table td.day-start {
+    border-left: 2px solid rgba(161, 128, 36, 0.6) !important;
+  }
+  
+  /* Slightly stronger separator on hover row so it stays visible */
+  .card table tr:hover td.day-start {
+    border-left: 2px solid rgba(161, 128, 36, 0.8) !important;
+  }
   </style>
 </head>
 <body>
