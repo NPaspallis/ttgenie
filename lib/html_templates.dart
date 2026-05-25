@@ -1104,6 +1104,11 @@ tr {
   .card table tr:hover td.day-start {
     border-left: 2px solid rgba(161, 128, 36, 0.8) !important;
   }
+
+  .lunch-time {
+      background: #ffffc040 !important;
+  }
+
   </style>
 </head>
 <body>

@@ -137,7 +137,7 @@ class TimetableUtil {
         final int skips = timeToDayToVerticalSkips[currentStartTime]?[day] ?? 1;
         firstEntryInDay = skips <= 1;
         for (int i = 0; i < maxConcurrentSessions - skips + 1; i++) {
-          rowHtml += lunchTime ? '<td bgcolor="#ffffc0"${firstEntryInDay ? ' class="day-start"' : ''}"></td>' : '<td${firstEntryInDay ? ' class="day-start"' : ''}></td>';
+          rowHtml += lunchTime ? '<td class="lunch-time${firstEntryInDay ? ' day-start' : ''}"></td>' : '<td${firstEntryInDay ? ' class="day-start"' : ''}></td>';
           firstEntryInDay = false;
         }
       }
