@@ -22,6 +22,8 @@ class TimetableEntry {
   final String groupName;
   final String lecturerId;
   final String notes;
+  final String lecturer2Name;
+  final String lecturer2Id;
 
   TimetableEntry({
     required this.recurrenceTypeName,
@@ -42,6 +44,8 @@ class TimetableEntry {
     required this.groupName,
     required this.lecturerId,
     required this.notes,
+    required this.lecturer2Name,
+    required this.lecturer2Id
   });
 
   // String get startTimeAsString => '${startTime.hour < 10 ? '0' : ''}${startTime.hour}:${startTime.minute < 10 ? '0' : ''}${startTime.minute}';
@@ -60,16 +64,17 @@ class TimetableEntry {
     final String startTimeStr = startTimeAsString;
     final String endTimeStr = endTimeAsString;
 
-    return "<p>"
-        "<h3>$moduleCode - $moduleName</h3>"
-        "<span style='float:left; width:${spanWidth}px;'>Room:</span> ${roomCode.isEmpty ? "?" : roomCode}<br/>"
-        "<span style='float:left; width:${spanWidth}px;'>Lecturer ID:</span> $lecturerId<br/>"
-        "<span style='float:left; width:${spanWidth}px;'>Session:</span> $startTimeStr - $endTimeStr<br/>"
-        "<span style='float:left; width:${spanWidth}px;'>Type:</span> $sessionTypeName<br/>"
-        "<span style='float:left; width:${spanWidth}px;'>Day:</span> $dayName<br/>"
-        "<span style='float:left; width:${spanWidth}px;'>Delivery:</span> $deliveryTypeName<br/>"
-        "${notes.trim().isEmpty ? "" : "<span style='float:left; width:${spanWidth}px;'>Notes:</span> $notes<br/>"}"
-        "</p>";
+    return '''<p>
+        <h3>$moduleCode - $moduleName</h3>
+        <span style='float:left; width:${spanWidth}px;'>Room:</span> ${roomCode.isEmpty ? "?" : roomCode}<br/>
+        <span style='float:left; width:${spanWidth}px;'>Lecturer:</span> $lecturerName [$lecturerId]<br/>
+        ${lecturer2Id.isNotEmpty ? "<span style='float:left; width:${spanWidth}px;'>Second tutor:</span> $lecturer2Name [$lecturer2Id]<br/>" : ""}
+        <span style='float:left; width:${spanWidth}px;'>Session:</span> $startTimeStr - $endTimeStr<br/>
+        <span style='float:left; width:${spanWidth}px;'>Type:</span> $sessionTypeName<br/>
+        <span style='float:left; width:${spanWidth}px;'>Day:</span> $dayName<br/>
+        <span style='float:left; width:${spanWidth}px;'>Delivery:</span> $deliveryTypeName<br/>
+        ${notes.trim().isEmpty ? "" : "<span style='float:left; width:${spanWidth}px;'>Notes:</span> $notes<br/>"}
+        </p>''';
   }
 
   @override
@@ -96,7 +101,9 @@ class TimetableEntry {
         "roomType=$roomType, "
         "groupName='$groupName', "
         "lecturerId='$lecturerId', "
-        "notes='$notes'"
+        "notes='$notes', "
+        "lecturer2Name='$lecturerId', "
+        "lecturer2Id='$lecturerId'"
         "}";
   }
 }

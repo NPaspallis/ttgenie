@@ -256,6 +256,9 @@ class _TTGenieState extends State<TTGenie> {
       final String lecturerId = getStr(16);
       final String notes = getStr(17);
       final String rank = getStr(18);
+      final String lecturer2Name = getStr(19); // ignore for now
+      final String lecturer2Id = getStr(20);
+      final String rank2 = getStr(21);
 
       if (moduleCode.isEmpty) continue;
 
@@ -278,12 +281,21 @@ class _TTGenieState extends State<TTGenie> {
         groupName: groupName,
         lecturerId: lecturerId,
         notes: notes,
+        lecturer2Name: lecturer2Name,
+        lecturer2Id: lecturer2Id
       );
 
       moduleCodeToTimetableEntryMap.putIfAbsent(moduleCode, () => []).add(timetableEntry);
       academicIdToTimetableEntryMap.putIfAbsent(lecturerId.toLowerCase(), () => []).add(timetableEntry);
+      if(lecturer2Id.isNotEmpty) {
+        academicIdToTimetableEntryMap.putIfAbsent(lecturer2Id.toLowerCase(), () => []).add(timetableEntry);
+      }
       academicIdlToName[lecturerId.toLowerCase()] = lecturerName;
       academicIdlToRank[lecturerId.toLowerCase()] = rank;
+      if(lecturer2Id.isNotEmpty) {
+        academicIdlToName[lecturer2Id.toLowerCase()] = lecturer2Name;
+        academicIdlToRank[lecturer2Id.toLowerCase()] = rank2;
+      }
       timetableEntries.add(timetableEntry);
       if(roomCode.isNotEmpty) {
         labIdToTimetableEntryMap.putIfAbsent(roomCode, () => []).add(timetableEntry);
