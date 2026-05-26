@@ -57,11 +57,21 @@ class ConflictUtil {
       coveredModuleCodes.add(timetableEntry.moduleCode);
     }
 
-    final List<String> timetabledModuleCodes = timetableViewEntry.values;
-    for(final String timetabledModuleCode in timetabledModuleCodes) {
-      if(!coveredModuleCodes.contains(timetabledModuleCode)) {
-        allMessages.add(Message(MessageType.warning, 'Missing $timetabledModuleCode',
-          'No entries found for timetabled module: $timetabledModuleCode', url: Message.noUrl));
+    final List<String> timetabledModuleCodesWithGroups = timetableViewEntry.values; // all modules -- if a module has a preferred group it has the form "<module_code> (<group>)", e.g. "CO1407 (A)"
+    for(final String timetabledModuleCodeWithGroup in timetabledModuleCodesWithGroups) {
+      String group;
+      String moduleCode;
+      if(timetabledModuleCodeWithGroup.endsWith(")")) {
+        // extract group name and module code
+        group = timetabledModuleCodeWithGroup.substring(timetabledModuleCodeWithGroup.indexOf('(')+1, timetabledModuleCodeWithGroup.length-1);
+        moduleCode = timetabledModuleCodeWithGroup.substring(0, timetabledModuleCodeWithGroup.indexOf('(')-1);
+      } else {
+        moduleCode = timetabledModuleCodeWithGroup; // no group
+      }
+
+      if(!coveredModuleCodes.contains(moduleCode)) {
+        allMessages.add(Message(MessageType.warning, 'Missing $moduleCode',
+          'No entries found for timetabled module: $moduleCode', url: Message.noUrl));
       }
     }
 

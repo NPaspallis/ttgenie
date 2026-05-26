@@ -148,8 +148,20 @@ class _TTGenieState extends State<TTGenie> {
           for(TimetableViewEntry timetableViewEntry in timetableViewEntries) {
             if(timetableViewEntry.type == 'Modules') {
               List<TimetableEntry> selectedTimetableEntries = [];
-              for(String moduleCode in timetableViewEntry.values) {
-                selectedTimetableEntries.addAll(moduleCodeToTimetableEntryMap[moduleCode] ?? []);
+              for(String moduleCodeWithGroup in timetableViewEntry.values) {
+                if(moduleCodeWithGroup.endsWith(")")) {
+                  // extract group name
+                  final String group = moduleCodeWithGroup.substring(moduleCodeWithGroup.indexOf('(')+1, moduleCodeWithGroup.length-1);
+                  final String moduleCode = moduleCodeWithGroup.substring(0, moduleCodeWithGroup.indexOf('(')-1);
+                  List<TimetableEntry> allTimetableEntriesForModuleCode = moduleCodeToTimetableEntryMap[moduleCode] ?? [];
+                  for(TimetableEntry timetableEntry in allTimetableEntriesForModuleCode) {
+                    if(timetableEntry.groupName == group || timetableEntry.groupName.isEmpty) {
+                      selectedTimetableEntries.add(timetableEntry);
+                    }
+                  }
+                } else { // no group, just module code
+                  selectedTimetableEntries.addAll(moduleCodeToTimetableEntryMap[moduleCodeWithGroup] ?? []);
+                }
               }
 
               htmlProgrammes += '${ProgrammesUtil.getProgrammeTimetableAsDiv(timetableViewEntry, selectedTimetableEntries)}\n\n';
