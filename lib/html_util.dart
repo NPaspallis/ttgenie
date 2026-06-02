@@ -64,7 +64,7 @@ class HtmlUtil {
       htmlProgrammes += '</div>\n\n';
     }
 
-    List<String> groupNames = ['Prof. & Assoc. Prof.', 'Assist. Prof.', 'Lecturer & Lecturer (TO)', 'STS'];
+    List<String> groupNames = ['Prof. & Assoc. Prof. & Assist. Prof.', 'Lecturer & Lecturer (TO)', 'STS (A-J)', 'STS (K-Z)'];
 
     final List<String> academicIds = academicIdsToRanks.keys.toList();
     academicIds.sort((id1, id2) => AcademicWorkloadUtil.compare(academicIdsToNames[id1]!, academicIdsToRanks[id1]!, academicIdsToNames[id2]!, academicIdsToRanks[id2]!));
@@ -75,13 +75,13 @@ class HtmlUtil {
 
       for(String academicId in academicIds) {
         final String academicRank = academicIdsToRanks[academicId]!;
-        if(i==0 && !(academicRank == 'Prof.' || academicRank == 'Assoc. Prof.')) {
+        if(i==0 && !(academicRank == 'Prof.' || academicRank == 'Assoc. Prof.' || academicRank == 'Assist. Prof.')) {
           continue;
-        } else if(i==1 && academicRank != 'Assist. Prof.') {
+        } else if(i==1 && !(academicRank == 'Lecturer' || academicRank == 'Lecturer (TO)')) {
           continue;
-        } else if(i==2 && !(academicRank == 'Lecturer' || academicRank == 'Lecturer (TO)')) {
+        } else if(i==2 && (academicRank != 'STS' || academicId[0].toLowerCase().compareTo('j') >= 0)) {
           continue;
-        } else if(i==3 && academicRank != 'STS') {
+        } else if(i==3 && (academicRank != 'STS' || academicId[0].toLowerCase().compareTo('j') < 0)) {
           continue;
         }
         final String academicName = academicIdsToNames[academicId]!;
