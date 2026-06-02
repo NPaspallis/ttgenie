@@ -22790,7 +22790,7 @@ m.toString
 l=J.bS(m)
 l.ct(m)
 for(m=l.gO(m),l=n+"-";m.q();){k=m.gD(m).e
-p=p+('<a href="#'+A.aX(l+k," ","_")+'"><span></span>'+k+"</a>\n")+"\n"}}p+="</div>\n\n"}j=["Prof. & Assoc. Prof.","Assist. Prof.","Lecturer & Lecturer (TO)","STS"]
+p=p+('<a href="#'+A.aX(l+k," ","_")+'"><span></span>'+k+"</a>\n")+"\n"}}p+="</div>\n\n"}j=["Prof. & Assoc. Prof. & Assist. Prof.","Lecturer & Lecturer (TO)","STS (A-J)","STS (K-Z)"]
 b0=A.q(b5).i("ay<1>")
 i=A.Z(new A.ay(b5,b0),b0.i("l.E"))
 B.b.bI(i,new A.a_j(b4,b5))
@@ -22798,14 +22798,24 @@ for(h="",g=0;g<4;++g){h=h+a8+(a9+j[g]+"</div>\n\n")
 for(b0=i.length,q=g===3,m=g===2,l=g===1,k=g===0,s=0;s<i.length;i.length===b0||(0,A.w)(i),++s){f=i[s]
 e=b5.h(0,f)
 e.toString
-if(k)d=!(e==="Prof."||e==="Assoc. Prof.")
+if(k)d=!(e==="Prof."||e==="Assoc. Prof."||e==="Assist. Prof.")
 else d=!1
 if(d)continue
-else if(l&&e!=="Assist. Prof.")continue
-else{if(m)d=!(e==="Lecturer"||e==="Lecturer (TO)")
+else{if(l)d=!(e==="Lecturer"||e==="Lecturer (TO)")
 else d=!1
 if(d)continue
-else if(q&&e!=="STS")continue}e=b4.h(0,f)
+else{if(m)if(e==="STS"){d=f[0].toLowerCase()
+if(d==="j")d=0
+else d=d<"j"?-1:1
+d=d>=0}else d=!0
+else d=!1
+if(d)continue
+else{if(q)if(e==="STS"){e=f[0].toLowerCase()
+if(e==="j")e=0
+else e=e<"j"?-1:1
+e=e<0}else e=!0
+else e=!1
+if(e)continue}}}e=b4.h(0,f)
 e.toString
 h=h+('<a href="#'+A.aX("academic-"+e," ","_")+'"><span></span>'+e+"</a>\n")+"\n"}h+="</div>\n\n"}B.b.ct(b6)
 for(b0=b6.length,c="",s=0;s<b0;++s){b=b6[s]
@@ -24202,7 +24212,10 @@ b9=k.d
 b9=a0.length===0?b9:b9+" ("+a0+")"
 a0=k.Q
 c0=a0.length===0?"":" @ "+a0
-b3+="<td class='"+h.toLowerCase()+d+"' rowspan='"+b7+"'>"+('<div class="tooltip">'+b9+"<br>"+c0+'<span class="tooltiptext">'+k.Dy()+"</span></div>")+"</td>"
+a0=k.ch
+a1=k.cy
+a1=a1.length===0?"":" + "+a1
+b3+="<td class='"+h.toLowerCase()+d+"' rowspan='"+b7+"'>"+('<div class="tooltip">'+b9+"<br>"+c0+"<br><i>"+(a0+a1)+'</i><span class="tooltiptext">'+k.Dy()+"</span></div>")+"</td>"
 b6=!1}}r=a7.h(0,b0)
 c1=r==null?c2:r.h(0,a)
 if(c1==null)c1=1
